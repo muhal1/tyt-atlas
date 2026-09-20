@@ -1,5 +1,7 @@
 # TYT Atlas
 
+[Canlı site](https://muhal1.github.io/tyt-atlas/)
+
 2027 TYT için temel ve orta seviye kaynak rehberi. 20 Eylül 2026 tarihli TYT kaynak araştırması konuşmasındaki video kampları, soru bankaları ve video ders kitapları tabloya aktarıldı.
 
 ## Özellikler
@@ -23,4 +25,5 @@ Memnuniyet oranları için resmî bir veri yoktur; liste öznel araştırma öne
 ## Kaynak verisini düzenleme
 
 `app.js` başındaki `kaynaklar` dizisinde her satırın sırası: ders, yayıncı/hoca, ad, tür (`video`, `kitap`, `foy`), seviye (`temel`, `orta`), not, isteğe bağlı URL ve bağlantı etiketi.
+
 
