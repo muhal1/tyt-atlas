@@ -20,7 +20,7 @@ const kaynaklar = [
   ['Dil Bilgisi','Rüştü Hoca','Dil Bilgisi Dersleri','video','temel','Alternatif anlatım; belirli seri bağlantısı verilmedi'],
   ['Dil Bilgisi','Hız ve Renk','Dil Bilgisi Soru Bankası','kitap','temel','Başlangıç için'],
   ['Dil Bilgisi','Bilgi Sarmal','Dil Bilgisi Soru Bankası','kitap','orta','İkinci aşama'],
-  ['Paragraf','Hız ve Renk','Paragraf Soru Bankası','kitap','temel','Günlük soru pratiği'],
+  ['Paragraf','Hız ve Renk','Paragraf Soru Bankası','kitap','temel','İlk paragraf kitabı · Trendyol 4,7/5 (Eyl 2026)','https://www.trendyol.com/hiz-ve-renk-yayinlari/hiz-ve-renk-tyt-ayt-kpss-ales-dgs-paragraf-soru-bankasi-2026-p-4482454','Ürün sayfası'],
   ['Paragraf','Bilgi Sarmal','Paragraf Soru Bankası','kitap','orta','Başlangıç kaynağından sonra'],
   ['Paragraf','Paragrafın Ritmi','Paragraf Soru Bankası','kitap','orta','Alternatif'],
   ['Fizik','VIP Fizik','50 Günde TYT Fizik','video','temel','Fizik sıfırsa ana kamp','https://www.youtube.com/watch?v=2qtDQBP7Avs','Ders videosu'],
@@ -52,7 +52,10 @@ const kaynaklar = [
   ['Fizik','Özcan Aykın','55 Günde TYT Fizik Video Ders Takip Kitabı 2027','foy','temel','Kamp ile eşleşir; alırken baskı yılını kontrol et'],
   ['Matematik','Bıyıklı Matematik','10 Günde Matematik Temeli Atma Garanti Kampı Kitabı','foy','temel','10 günlük temel kampıyla birlikte kullan','https://biyiklimatematik.com/urun/10-Gunde-Matematik-Temeli-Atma-Garanti-Kampi-93','Yayıncı sayfası'],
   ['Problemler','Bıyıklı Matematik','10 Günde Problemler Temeli Atma Garanti Kampı Kitabı','foy','temel','Problem temeli için video ders kitabı','https://biyiklimatematik.com/urun/10-Gunde-PROBLEMLER-Temeli-Atma-Garanti-Kampi-94','Yayıncı sayfası'],
-  ['Matematik','Bıyıklı Matematik','GPT TYT Matematik Soru Bankası','kitap','temel','Kolaydan zora video çözümlü sorular; baskı yılını kontrol et','https://biyiklimatematik.com/urun/GPT-TYT-Matematik-Soru-Bankasi-Biyikli-Matematik-Matronik-124','Yayıncı sayfası']
+  ['Matematik','Bıyıklı Matematik','GPT TYT Matematik Soru Bankası','kitap','temel','Kolaydan zora video çözümlü sorular; baskı yılını kontrol et','https://biyiklimatematik.com/urun/GPT-TYT-Matematik-Soru-Bankasi-Biyikli-Matematik-Matronik-124','Yayıncı sayfası'],
+  ['Problemler','Acil Yayınları','TYT Problemlerin İlacı 2027','kitap','temel','Temeli zayıf olanlara · Trendyol 4,7/5 (Eyl 2026)','https://www.trendyol.com/acil-yayinlari/acil-tyt-problemlerin-ilaci-2027-p-759815524','Ürün sayfası'],
+  ['Problemler','Mikro Orijinal','TYT Problemler Fasikülü Soru Bankası','kitap','temel','Kolay → orta alternatif · Trendyol 4,6/5 (Eyl 2026)','https://www.trendyol.com/orijinal-yayinlari/orijinal-mikro-tyt-problemler-fasikulu-soru-bankasi-p-854656337','Ürün sayfası'],
+  ['Paragraf','345 Yayınları','Sıfır Risk Paragraf Soru Bankası','kitap','temel','Kolaydan zora alternatif · Trendyol 4,7/5 (Eyl 2026)','https://www.trendyol.com/uc-dort-bes-yayincilik/345-paragraf-sifir-risk-guncel-baski-p-750677344','Ürün sayfası']
 // Kimlik 2 kaldırılan eski oynatma listesine aitti; diğer kayıtların kimlikleri sabit kalır.
 ].map(([ders,yayinci,ad,tur,seviye,not,url,baglanti],index)=>({id:index===0?1:index+2,ders,yayinci,ad,tur,seviye,not,url,baglanti}));
 
