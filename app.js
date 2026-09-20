@@ -32,7 +32,7 @@ const kaynaklar = [
   ['Kimya','Ferrum · Yakup Hoca','2027 TYT Kimya Kampı','video','temel','22 günlük kamp · Orbital ödevleriyle','https://www.youtube.com/playlist?list=PLB0hn7Hw33ssbcLtCDjnzgIWIALTQH-Mn','Oynatma listesi'],
   ['Kimya','Ferrum','TYT Kimya Video Ders Kitabı','foy','temel','Kamp ile eşleşir'],
   ['Kimya','Orbital','TYT Kimya Soru Bankası','kitap','temel','Ferrum kampı ödev kaynağı'],
-  ['Biyoloji','Biosem','39 Günde TYT Biyolojiyi Bitir 2026–27','video','temel','Ana kamp','https://www.youtube.com/watch?list=PLqLwBmByktJWbDXnjbl5CMRrm5nEwMFOg&v=4TSDgTt83yw','Oynatma listesi'],
+  ['Biyoloji','Biosem','39 Günde TYT Biyoloji Kampı 2027','video','temel','Ana kamp','https://www.youtube.com/playlist?list=PLqLwBmByktJWEP58XKgI5LE1BeMTOkhjJ','Oynatma listesi'],
   ['Biyoloji','Betül Biyoloji','2027 TYT Biyoloji Kampı','video','temel','Sıfırdan başlayanlar için alternatif','https://www.youtube.com/watch?v=52AVCgjN6tM','Ders videosu'],
   ['Biyoloji','Biosem','TYT Biyoloji Video Ders Kitabı','foy','temel','Kamp ile eşleşir'],
   ['Biyoloji','Biyotik','TYT Biyoloji Soru Bankası','kitap','temel','Temel → orta seviye'],
