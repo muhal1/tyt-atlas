@@ -14,6 +14,8 @@
 
 Memnuniyet oranları için resmî bir veri yoktur; liste öznel araştırma önerileridir. Kitaplarda baskı ve bulunabilirlik satın almadan önce kontrol edilmelidir. Satış bağlantısı olmayan ürünler için rastgele mağaza bağlantısı eklenmemiştir.
 
+Mert Hoca ve Özcan Aykın kaynaklarının 2027 etiketli kamp videolarından bazıları önceki yıllarda yüklenmiştir. Güncel kitap baskısı, videoların yeniden çekildiği anlamına gelmez.
+
 ## Yerel kullanım
 
 `index.html` dosyasını tarayıcıda açın. Derleme veya paket kurulumu gerekmez.
@@ -25,5 +27,3 @@ Memnuniyet oranları için resmî bir veri yoktur; liste öznel araştırma öne
 ## Kaynak verisini düzenleme
 
 `app.js` başındaki `kaynaklar` dizisinde her satırın sırası: ders, yayıncı/hoca, ad, tür (`video`, `kitap`, `foy`), seviye (`temel`, `orta`), not, isteğe bağlı URL ve bağlantı etiketi.
-
-

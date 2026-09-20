@@ -44,7 +44,13 @@ const kaynaklar = [
   ['Tarih','Gökhan Öz / Benim Hocam','TYT Tarih Soru Bankası 2027','kitap','temel','Ders notuyla birlikte'],
   ['Felsefe / Din','Yusuf Mert Aslan / Bilgin Gürek','Kısa Konu Anlatımı','video','temel','Kısa özet + soru çözümü; belirli seri bağlantısı verilmedi'],
   ['Sosyal','Apotemi','TYT Sosyal Bilimler Konu Özeti','foy','orta','Genel tekrar'],
-  ['Genel','ÖSYM / OGM','Çıkmış TYT Soruları ve Ücretsiz Materyaller','kitap','temel','Resmî ücretsiz kaynakları da programa kat']
+  ['Genel','ÖSYM / OGM','Çıkmış TYT Soruları ve Ücretsiz Materyaller','kitap','temel','Resmî ücretsiz kaynakları da programa kat'],
+  // Yeni kayıtlar sonda: önceki localStorage kimlikleri korunur.
+  ['Matematik','Mert Hoca','70 Günde TYT Matematik · 2027 etiketli seri','video','orta','Temeli biraz oturanlar için ayrıntılı alternatif; video eski tarihte yüklenmiş olabilir','https://www.youtube.com/watch?v=8F-ojRKYTVU','Ders videosu'],
+  ['Matematik','Mert Hoca Yayınları','70 Günde TYT Matematik Video Ders Kitabı 2027','foy','orta','70 günlük kamp ile eşleşir','https://www.merthoca.com/70-gunde-tyt-matematik-video-ders-kitabi-2027-model-','Yayıncı sayfası'],
+  ['Matematik','Mert Hoca Yayınları','TYT Matematik Soru Bankası 2027','kitap','orta','Temel oturduktan sonra; önce tek soru bankası seç','https://www.merthoca.com/-tyt-matematik-soru-bankasi-2027-model-','Yayıncı sayfası'],
+  ['Fizik','Özcan Aykın','55 Günde TYT Fizik · 2027 etiketli seri','video','temel','Kavramsal ve ayrıntılı; uzun kamp, eski videolar güncel başlıkla sunuluyor','https://www.youtube.com/watch?v=7aVrdQ7uSQ4','Ders videosu'],
+  ['Fizik','Özcan Aykın','55 Günde TYT Fizik Video Ders Takip Kitabı 2027','foy','temel','Kamp ile eşleşir; alırken baskı yılını kontrol et']
 ].map(([ders,yayinci,ad,tur,seviye,not,url,baglanti],index)=>({id:index+1,ders,yayinci,ad,tur,seviye,not,url,baglanti}));
 
 const turAdlari={video:'Video kampı',kitap:'Soru bankası',foy:'VDK / Föy'};
