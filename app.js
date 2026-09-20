@@ -29,7 +29,7 @@ const kaynaklar = [
   ['Fizik','Altuğ Güneş','Tarz Kamp Kitabı','foy','orta','Altuğ Güneş kampı ile eşleşir'],
   ['Fizik','Hız ve Renk / Ulti','TYT Fizik Soru Bankası','kitap','temel','Temel çok zayıfsa'],
   ['Fizik','345 Yayınları','TYT Fizik Soru Bankası','kitap','orta','Konu oturduktan sonra'],
-  ['Kimya','Ferrum · Yakup Hoca','2027 TYT Kimya Kampı','video','temel','22 günlük kamp · Orbital ödevleriyle','https://www.youtube.com/watch?v=Uzz4Z_iV4cA','Ders videosu'],
+  ['Kimya','Ferrum · Yakup Hoca','2027 TYT Kimya Kampı','video','temel','22 günlük kamp · Orbital ödevleriyle','https://www.youtube.com/playlist?list=PLB0hn7Hw33ssbcLtCDjnzgIWIALTQH-Mn','Oynatma listesi'],
   ['Kimya','Ferrum','TYT Kimya Video Ders Kitabı','foy','temel','Kamp ile eşleşir'],
   ['Kimya','Orbital','TYT Kimya Soru Bankası','kitap','temel','Ferrum kampı ödev kaynağı'],
   ['Biyoloji','Biosem','39 Günde TYT Biyolojiyi Bitir 2026–27','video','temel','Ana kamp','https://www.youtube.com/watch?list=PLqLwBmByktJWbDXnjbl5CMRrm5nEwMFOg&v=4TSDgTt83yw','Oynatma listesi'],
