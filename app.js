@@ -4,7 +4,7 @@ const kaynaklar = [
   ['Matematik','Bıyıklı Matematik','2027 TYT Matematik Kamplarımız','video','temel','Ana kamp · temel → orta','https://www.youtube.com/playlist?list=PL2wqvRc1FjTlt-yzGniaw8APzbPI4fTxm','Oynatma listesi'],
   ['Matematik','Rehber Matematik','49 Günde TYT Matematik 2027','video','temel','Daha yavaş anlatım alternatifi','https://www.youtube.com/watch?v=2_p7WgLjshw','Ders videosu'],
   ['Matematik','Bıyıklı Matematik','10 Günde Matematik Temeli Atma','video','temel','Dört işlem ve kesirlerde eksik varsa önce bunu izle','https://www.youtube.com/playlist?list=PLmHUXVybN_QLYKnFoJz0jjkV1rW9ddQPN','Oynatma listesi'],
-  ['Matematik','Bıyıklı Matematik','55 Günde TYT Video Ders Kitabı 2027','foy','temel','Ana kamp ile eşleşir'],
+  ['Matematik','Bıyıklı Matematik','55 Günde TYT Matematik Video Ders Kitabı 2027','foy','temel','Ana kamp ile eşleşir; 2027 baskı','https://www.trendyol.com/biyikli-matematik/55-gunde-tyt-matematik-kampi-video-ders-kitabi-2027-tyt-p-313663039','Ürün sayfası'],
   ['Matematik','345 Yayınları','TYT Matematik Soru Bankası','kitap','temel','İlk soru bankası · temel → orta'],
   ['Matematik','Bilgi Sarmal','TYT Matematik Soru Bankası','kitap','orta','345 sonrasında'],
   ['Matematik','Matematiğin İlacı / Aktif Matematik','Temel Matematik','kitap','temel','Matematik gerçekten sıfırsa'],
@@ -49,7 +49,10 @@ const kaynaklar = [
   ['Matematik','Mert Hoca Yayınları','70 Günde TYT Matematik Video Ders Kitabı 2027','foy','orta','70 günlük kamp ile eşleşir','https://www.merthoca.com/70-gunde-tyt-matematik-video-ders-kitabi-2027-model-','Yayıncı sayfası'],
   ['Matematik','Mert Hoca Yayınları','TYT Matematik Soru Bankası 2027','kitap','orta','Temel oturduktan sonra; önce tek soru bankası seç','https://www.merthoca.com/-tyt-matematik-soru-bankasi-2027-model-','Yayıncı sayfası'],
   ['Fizik','Özcan Aykın','55 Günde TYT Fizik · 2027 etiketli seri','video','temel','Kavramsal ve ayrıntılı; uzun kamp, eski videolar güncel başlıkla sunuluyor','https://www.youtube.com/watch?v=7aVrdQ7uSQ4','Ders videosu'],
-  ['Fizik','Özcan Aykın','55 Günde TYT Fizik Video Ders Takip Kitabı 2027','foy','temel','Kamp ile eşleşir; alırken baskı yılını kontrol et']
+  ['Fizik','Özcan Aykın','55 Günde TYT Fizik Video Ders Takip Kitabı 2027','foy','temel','Kamp ile eşleşir; alırken baskı yılını kontrol et'],
+  ['Matematik','Bıyıklı Matematik','10 Günde Matematik Temeli Atma Garanti Kampı Kitabı','foy','temel','10 günlük temel kampıyla birlikte kullan','https://biyiklimatematik.com/urun/10-Gunde-Matematik-Temeli-Atma-Garanti-Kampi-93','Yayıncı sayfası'],
+  ['Problemler','Bıyıklı Matematik','10 Günde Problemler Temeli Atma Garanti Kampı Kitabı','foy','temel','Problem temeli için video ders kitabı','https://biyiklimatematik.com/urun/10-Gunde-PROBLEMLER-Temeli-Atma-Garanti-Kampi-94','Yayıncı sayfası'],
+  ['Matematik','Bıyıklı Matematik','GPT TYT Matematik Soru Bankası','kitap','temel','Kolaydan zora video çözümlü sorular; baskı yılını kontrol et','https://biyiklimatematik.com/urun/GPT-TYT-Matematik-Soru-Bankasi-Biyikli-Matematik-Matronik-124','Yayıncı sayfası']
 // Kimlik 2 kaldırılan eski oynatma listesine aitti; diğer kayıtların kimlikleri sabit kalır.
 ].map(([ders,yayinci,ad,tur,seviye,not,url,baglanti],index)=>({id:index===0?1:index+2,ders,yayinci,ad,tur,seviye,not,url,baglanti}));
 
