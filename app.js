@@ -2,7 +2,6 @@
 // Bağlantısı doğrulanmamış ürünler için satış bağlantısı uydurulmaz.
 const kaynaklar = [
   ['Matematik','Bıyıklı Matematik','55 Günde TYT Matematik 2027','video','temel','Ana kamp · temel → orta','https://www.youtube.com/watch?v=bxT6Aq0oKnE&list=PL2wqvRc1FjTlt-yzGniaw8APzbPI4fTxm','Oynatma listesi'],
-  ['Matematik','Bıyıklı Matematik','55 Günde TYT Matematik oynatma listesi','video','temel','Eski kamp oynatma listesi','https://youtube.com/playlist?list=PL2wqvRc1FjTkbSgOYlcnLhgojLISWQKPQ','Oynatma listesi'],
   ['Matematik','Rehber Matematik','49 Günde TYT Matematik 2027','video','temel','Daha yavaş anlatım alternatifi','https://www.youtube.com/watch?v=2_p7WgLjshw','Ders videosu'],
   ['Matematik','Bıyıklı Matematik','10 Günde Matematik Temeli Atma','video','temel','Dört işlem ve kesirlerde eksik varsa önce bunu izle','https://www.youtube.com/playlist?list=PLmHUXVybN_QLYKnFoJz0jjkV1rW9ddQPN','Oynatma listesi'],
   ['Matematik','Bıyıklı Matematik','55 Günde TYT Video Ders Kitabı 2027','foy','temel','Ana kamp ile eşleşir'],
@@ -51,14 +50,15 @@ const kaynaklar = [
   ['Matematik','Mert Hoca Yayınları','TYT Matematik Soru Bankası 2027','kitap','orta','Temel oturduktan sonra; önce tek soru bankası seç','https://www.merthoca.com/-tyt-matematik-soru-bankasi-2027-model-','Yayıncı sayfası'],
   ['Fizik','Özcan Aykın','55 Günde TYT Fizik · 2027 etiketli seri','video','temel','Kavramsal ve ayrıntılı; uzun kamp, eski videolar güncel başlıkla sunuluyor','https://www.youtube.com/watch?v=7aVrdQ7uSQ4','Ders videosu'],
   ['Fizik','Özcan Aykın','55 Günde TYT Fizik Video Ders Takip Kitabı 2027','foy','temel','Kamp ile eşleşir; alırken baskı yılını kontrol et']
-].map(([ders,yayinci,ad,tur,seviye,not,url,baglanti],index)=>({id:index+1,ders,yayinci,ad,tur,seviye,not,url,baglanti}));
+// Kimlik 2 kaldırılan eski oynatma listesine aitti; diğer kayıtların kimlikleri sabit kalır.
+].map(([ders,yayinci,ad,tur,seviye,not,url,baglanti],index)=>({id:index===0?1:index+2,ders,yayinci,ad,tur,seviye,not,url,baglanti}));
 
 const turAdlari={video:'Video kampı',kitap:'Soru bankası',foy:'VDK / Föy'};
 const $=selector=>document.querySelector(selector);
 const text=(tag,value,className)=>{const el=document.createElement(tag);el.textContent=value;if(className)el.className=className;return el};
 const readSet=(key,convert=value=>value)=>{try{const value=JSON.parse(localStorage.getItem(key)||'[]');return new Set(Array.isArray(value)?value.map(convert):[])}catch{return new Set()}};
-const saved=readSet('tyt_kaydedilen',Number);
-const done=readSet('tyt_tamamlanan',Number);
+const saved=new Set([...readSet('tyt_kaydedilen',Number)].filter(id=>id!==2));
+const done=new Set([...readSet('tyt_tamamlanan',Number)].filter(id=>id!==2));
 const hiddenSubjects=readSet('tyt_gizlenen_dersler',String);
 const subjects=[...new Set(kaynaklar.map(item=>item.ders))];
 let resourceType='all';
@@ -206,6 +206,7 @@ function showPage(){
 }
 
 document.addEventListener('DOMContentLoaded',()=>{
+  persist(); // Kaldırılan kaynağın eski tarayıcı işaretlerini temizle.
   $('#subject-cards').addEventListener('click',event=>{
     const hide=event.target.closest('[data-hide-subject]');
     if(hide){hiddenSubjects.add(hide.dataset.hideSubject);persist();$('#hidden-subjects').open=true;renderAll();return}
