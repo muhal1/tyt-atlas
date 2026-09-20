@@ -60,6 +60,8 @@ const readSet=(key,convert=value=>value)=>{try{const value=JSON.parse(localStora
 const saved=new Set([...readSet('tyt_kaydedilen',Number)].filter(id=>id!==2));
 const done=new Set([...readSet('tyt_tamamlanan',Number)].filter(id=>id!==2));
 const hiddenSubjects=readSet('tyt_gizlenen_dersler',String);
+const cartKey='tyt_alisveris_sepeti';
+const cart=(()=>{try{const value=JSON.parse(localStorage.getItem(cartKey)||'[]');return Array.isArray(value)?value.filter(item=>item&&typeof item.id==='string'&&typeof item.url==='string'&&typeof item.name==='string'&&typeof item.note==='string'&&cartUrl(item.url)):[]}catch{return []}})();
 const subjects=[...new Set(kaynaklar.map(item=>item.ders))];
 let resourceType='all';
 
@@ -193,11 +195,34 @@ function renderAll(){
   renderResources();
 }
 
+function cartUrl(value){
+  try{const url=new URL(value.trim());return ['https:','http:'].includes(url.protocol)?url.href:null}catch{return null}
+}
+
+function persistCart(){
+  try{localStorage.setItem(cartKey,JSON.stringify(cart));return true}catch{return false}
+}
+
+function renderCart(){
+  const list=$('#cart-list');list.replaceChildren();
+  $('#cart-count').textContent=cart.length+' ürün';
+  $('#cart-empty').hidden=cart.length>0;
+  for(const item of cart){
+    const li=document.createElement('li');li.className='cart-item';
+    const copy=document.createElement('div');copy.className='cart-item-copy';
+    const link=text('a',item.name);link.href=item.url;link.target='_blank';link.rel='noopener noreferrer';
+    copy.append(link,text('small',new URL(item.url).hostname));
+    if(item.note)copy.append(text('p',item.note));
+    li.append(copy,actionButton('Kaldır','quiet-button cart-remove','removeCart',item.id,item.name+' ürününü sepetten kaldır'));
+    list.append(li);
+  }
+}
 function showPage(){
-  const page=location.hash==='#kaynaklar'?'kaynaklar':'genel';
+  const page=location.hash==='#kaynaklar'?'kaynaklar':location.hash==='#sepet'?'sepet':'genel';
   $('#overview-page').hidden=page!=='genel';
   $('#resources-page').hidden=page!=='kaynaklar';
-  $('#page-title').textContent=page==='genel'?'Genel bakış':'Kaynaklar';
+  $('#cart-page').hidden=page!=='sepet';
+  $('#page-title').textContent={genel:'Genel bakış',kaynaklar:'Kaynaklar',sepet:'Alışveriş Sepeti'}[page];
   document.querySelectorAll('[data-page]').forEach(link=>{
     const current=link.dataset.page===page;
     link.classList.toggle('active',current);
@@ -241,7 +266,28 @@ document.addEventListener('DOMContentLoaded',()=>{
   });
   for(const id of ['search','subject-filter','level-filter'])$('#'+id).addEventListener(id==='search'?'input':'change',renderResources);
   $('#clear-filters').addEventListener('click',()=>{$('#search').value='';$('#subject-filter').value='';$('#level-filter').value='';renderResources()});
+  $('#cart-form').addEventListener('submit',event=>{
+    event.preventDefault();
+    const url=cartUrl($('#cart-url').value);
+    const error=$('#cart-error');error.hidden=true;
+    if(!url){error.textContent='Geçerli bir http veya https bağlantısı gir.';error.hidden=false;return}
+    if(cart.some(item=>item.url===url)){error.textContent='Bu bağlantı zaten sepette var.';error.hidden=false;return}
+    const name=$('#cart-name').value.trim()||new URL(url).hostname;
+    const item={id:crypto.randomUUID(),url,name,note:$('#cart-note').value.trim()};
+    cart.unshift(item);
+    if(!persistCart()){
+      cart.shift();error.textContent='Tarayıcı listeyi kaydedemedi. Depolama alanını kontrol et.';error.hidden=false;return;
+    }
+    $('#cart-form').reset();renderCart();$('#cart-url').focus();
+  });
+  $('#cart-list').addEventListener('click',event=>{
+    const button=event.target.closest('[data-remove-cart]');if(!button)return;
+    const index=cart.findIndex(item=>item.id===button.dataset.removeCart);if(index<0)return;
+    const removed=cart.splice(index,1)[0];
+    if(!persistCart()){cart.splice(index,0,removed);const error=$('#cart-error');error.textContent='Ürün kaldırma işlemi kaydedilemedi.';error.hidden=false;return}
+    renderCart();
+  });
   $('#theme-toggle').addEventListener('click',()=>{const current=document.documentElement.dataset.tema||(matchMedia('(prefers-color-scheme: dark)').matches?'koyu':'acik');const next=current==='koyu'?'acik':'koyu';document.documentElement.dataset.tema=next;try{localStorage.setItem('tyt_tema',next)}catch{}});
   window.addEventListener('hashchange',showPage);
-  renderAll();showPage();
+  renderAll();renderCart();showPage();
 });

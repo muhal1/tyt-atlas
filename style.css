@@ -62,3 +62,27 @@
 .select-source.selected{background:var(--vurgu);color:var(--vurgu-yazi)}
 @media(max-width:700px){.overview-intro{display:block}.overview-intro h2{font-size:34px}.overview-intro .primary-link{margin-top:18px}.subject-grid{grid-template-columns:1fr}.subject-card{min-height:155px}.resources-intro h2{font-size:31px}.type-filter{padding:8px 10px}.hidden-subjects summary{padding:12px}}
 @media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}.hidden-subjects summary:before{transition:none}}
+
+/* Bağımsız alışveriş sepeti */
+.cart-layout{display:grid;grid-template-columns:minmax(250px,340px) minmax(0,1fr);gap:20px;align-items:start}
+.cart-form,.cart-results{background:var(--kart);border:1px solid var(--cizgi);border-radius:var(--r);padding:20px}
+.cart-form{display:grid;gap:8px}
+.cart-form h3{font-size:16px;margin:0 0 7px}
+.cart-form label{font-size:12px;font-weight:700;margin-top:8px}
+.cart-form label span{font-weight:400;color:var(--soluk)}
+.cart-form input,.cart-form textarea{width:100%;border:1px solid var(--cizgi);border-radius:5px;background:var(--alan-yuzey);color:var(--yazi);padding:10px;resize:vertical}
+.cart-form input:focus,.cart-form textarea:focus{outline:2px solid var(--vurgu);outline-offset:1px}
+.cart-submit{justify-content:space-between;border:0;margin-top:10px}
+.form-error{color:#b42318;font-size:12px;margin:2px 0}
+.cart-results .section-heading{align-items:center;margin-bottom:15px}
+.cart-results h3{font-size:18px;margin:2px 0 0}
+.cart-empty{padding:28px 16px;color:var(--soluk);background:var(--kart-2);border:1px dashed var(--cizgi);border-radius:5px;text-align:center}
+.cart-list{list-style:none;padding:0;margin:0}
+.cart-item{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:15px 0;border-top:1px solid var(--cizgi)}
+.cart-item-copy{min-width:0;display:grid;gap:3px}
+.cart-item-copy a{font-size:14px;font-weight:700;text-decoration:none;overflow-wrap:anywhere}
+.cart-item-copy a:hover{text-decoration:underline}
+.cart-item-copy small{color:var(--soluk);overflow-wrap:anywhere}
+.cart-item-copy p{white-space:pre-wrap;overflow-wrap:anywhere;color:var(--soluk);font-size:12px;margin:5px 0 0}
+.cart-remove{flex:none}
+@media(max-width:850px){.cart-layout{grid-template-columns:1fr}}

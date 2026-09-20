@@ -9,6 +9,7 @@
 - Genel bakışta ders kutuları ve seçilen video, soru bankası, VDK / föy kaynakları
 - Ders gizleme ve Genel bakış altındaki açılır bölümden geri getirme
 - Ayrı Kaynaklar sayfasında video, soru bankası ve VDK filtreleri; ders/seviye filtresi ve metin araması
+- Bağımsız Alışveriş Sepeti sayfasında ürün bağlantısı, isteğe bağlı ad/not ve kaldırma; bağlantılar yalnızca kullanılan tarayıcıda tutulur
 - Video bağlantılarında ders videosu ile oynatma listesi ayrımı
 - Seçim, gizleme ve tamamlandı işaretleri (`localStorage`)
 - Açık/koyu tema; CRN Atlas renkleri ve arayüz dili
