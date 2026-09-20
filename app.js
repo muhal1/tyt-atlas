@@ -54,44 +54,193 @@ const kaynaklar = [
 ].map(([ders,yayinci,ad,tur,seviye,not,url,baglanti],index)=>({id:index+1,ders,yayinci,ad,tur,seviye,not,url,baglanti}));
 
 const turAdlari={video:'Video kampı',kitap:'Soru bankası',foy:'VDK / Föy'};
-const $=s=>document.querySelector(s);
-let view='genel';
-const readSet=key=>{try{return new Set(JSON.parse(localStorage.getItem(key)||'[]'))}catch{return new Set()}};
-const saved=readSet('tyt_kaydedilen');
-const done=readSet('tyt_tamamlanan');
-const persist=()=>{try{localStorage.setItem('tyt_kaydedilen',JSON.stringify([...saved]));localStorage.setItem('tyt_tamamlanan',JSON.stringify([...done]))}catch{}};
+const $=selector=>document.querySelector(selector);
 const text=(tag,value,className)=>{const el=document.createElement(tag);el.textContent=value;if(className)el.className=className;return el};
+const readSet=(key,convert=value=>value)=>{try{const value=JSON.parse(localStorage.getItem(key)||'[]');return new Set(Array.isArray(value)?value.map(convert):[])}catch{return new Set()}};
+const saved=readSet('tyt_kaydedilen',Number);
+const done=readSet('tyt_tamamlanan',Number);
+const hiddenSubjects=readSet('tyt_gizlenen_dersler',String);
+const subjects=[...new Set(kaynaklar.map(item=>item.ders))];
+let resourceType='all';
 
-function render(){
-  const term=$('#search').value.trim().toLocaleLowerCase('tr');
-  const subject=$('#subject-filter').value;
-  const level=$('#level-filter').value;
-  const rows=kaynaklar.filter(k=>(view==='genel'||view===k.tur||view==='kaydedilen'&&saved.has(k.id))&&(!subject||k.ders===subject)&&(!level||k.seviye===level)&&(!term||`${k.ders} ${k.yayinci} ${k.ad} ${k.not}`.toLocaleLowerCase('tr').includes(term)));
-  const tbody=$('#resource-rows');tbody.replaceChildren();
-  for(const k of rows){
-    const tr=document.createElement('tr');if(done.has(k.id))tr.classList.add('done');
-    const subjectCell=document.createElement('td');subjectCell.append(text('span',k.ders,'subject'));tr.append(subjectCell);
-    const nameCell=document.createElement('td');const name=text('div',k.ad,'resource-name');name.append(text('small',k.yayinci));nameCell.append(name);tr.append(nameCell);
-    const typeCell=document.createElement('td');typeCell.append(text('span',turAdlari[k.tur],`type-tag type-${k.tur}`));tr.append(typeCell);
-    const levelCell=document.createElement('td');levelCell.append(text('span',k.seviye==='temel'?'Temel → Orta':'Orta',`level-tag ${k.seviye}`));tr.append(levelCell);
-    tr.append(text('td',k.not,'note-cell'));
-    const linkCell=document.createElement('td');linkCell.className='link-cell';if(k.url){const a=text('a',k.baglanti+' ↗');a.href=k.url;a.target='_blank';a.rel='noopener noreferrer';linkCell.append(a)}else linkCell.append(text('span','—','no-link'));tr.append(linkCell);
-    const actions=document.createElement('td');actions.className='actions';for(const [kind,set,symbol,title] of [['save',saved,'☆','Kaydet'],['done',done,'✓','Tamamlandı']]){const button=text('button',symbol,`row-button ${set.has(k.id)?'selected':''}`);button.type='button';button.dataset.action=kind;button.dataset.id=k.id;button.title=title;button.setAttribute('aria-label',`${k.ad}: ${set.has(k.id)?title+' işaretini kaldır':title+' işaretle'}`);button.setAttribute('aria-pressed',String(set.has(k.id)));actions.append(button)}tr.append(actions);tbody.append(tr);
+function persist(){
+  try{
+    localStorage.setItem('tyt_kaydedilen',JSON.stringify([...saved]));
+    localStorage.setItem('tyt_tamamlanan',JSON.stringify([...done]));
+    localStorage.setItem('tyt_gizlenen_dersler',JSON.stringify([...hiddenSubjects]));
+  }catch{}
+}
+
+function actionButton(label,className,action,value,ariaLabel){
+  const button=text('button',label,className);
+  button.type='button';
+  button.dataset[action]=String(value);
+  button.setAttribute('aria-label',ariaLabel);
+  return button;
+}
+
+function renderOverview(){
+  const grid=$('#subject-cards');
+  grid.replaceChildren();
+  const visible=subjects.filter(subject=>!hiddenSubjects.has(subject));
+  const countSelected=subject=>kaynaklar.filter(item=>item.ders===subject&&saved.has(item.id)).length;
+  visible.sort((a,b)=>Number(countSelected(b)>0)-Number(countSelected(a)>0)||subjects.indexOf(a)-subjects.indexOf(b));
+  for(const subject of visible){
+    const chosen=kaynaklar.filter(item=>item.ders===subject&&saved.has(item.id));
+    const card=document.createElement('article');
+    card.className='subject-card'+(chosen.length?' has-choice':'');
+    const head=document.createElement('div');
+    head.className='subject-card-head';
+    const title=text('h3',subject);
+    const badge=text('span',chosen.length+' seçili','subject-card-count');
+    head.append(title,badge);
+    const hide=actionButton('Gizle','hide-subject','hideSubject',subject,subject+' dersini gizle');
+    head.append(hide);
+    card.append(head);
+    if(chosen.length){
+      const list=document.createElement('ul');
+      list.className='chosen-list';
+      for(const item of chosen){
+        const row=document.createElement('li');
+        const copy=document.createElement('div');
+        copy.className='chosen-copy';
+        copy.append(text('span',turAdlari[item.tur],'chosen-kind'));
+        if(item.url){
+          const link=text('a',item.ad);
+          link.href=item.url;link.target='_blank';link.rel='noopener noreferrer';
+          copy.append(link);
+        }else copy.append(text('strong',item.ad));
+        copy.append(text('small',item.yayinci+(done.has(item.id)?' · Tamamlandı':'')));
+        row.append(copy,actionButton('Kaldır','remove-choice','removeChoice',item.id,item.ad+' seçimini kaldır'));
+        list.append(row);
+      }
+      card.append(list);
+    }else card.append(text('p','Henüz kaynak seçilmedi.','subject-empty'));
+    const pick=text('a',chosen.length?'Başka kaynak seç →':'Kaynak seç →','choose-link');
+    pick.href='#kaynaklar';
+    pick.dataset.chooseSubject=subject;
+    card.append(pick);
+    grid.append(card);
   }
-  $('#empty-state').hidden=rows.length!==0;
-  $('#result-count').textContent=`${rows.length} kaynak`;
+  if(!visible.length)grid.append(text('p','Tüm dersler gizli. Aşağıdaki bölümden geri getirebilirsin.','all-hidden'));
+  const hiddenList=$('#hidden-list');
+  hiddenList.replaceChildren();
+  for(const subject of subjects.filter(item=>hiddenSubjects.has(item))){
+    const row=document.createElement('div');
+    row.className='hidden-row';
+    row.append(text('span',subject),actionButton('Geri getir','restore-button','restoreSubject',subject,subject+' dersini geri getir'));
+    hiddenList.append(row);
+  }
+  if(!hiddenSubjects.size)hiddenList.append(text('p','Gizlenen ders yok.','subject-empty'));
+  $('#hidden-count').textContent=hiddenSubjects.size;
+  $('#visible-subject-count').textContent=visible.length+' ders';
+  $('#subject-count').textContent=visible.length;
+  $('#resource-count').textContent=kaynaklar.length;
   $('#saved-count').textContent=saved.size;
   $('#done-count').textContent=done.size;
 }
 
+function updateSubjectOptions(){
+  const select=$('#subject-filter');
+  const value=select.value;
+  select.replaceChildren();
+  const all=text('option','Tüm dersler');all.value='';select.append(all);
+  for(const subject of subjects.filter(item=>!hiddenSubjects.has(item)).sort((a,b)=>a.localeCompare(b,'tr'))){
+    const option=text('option',subject);option.value=subject;select.append(option);
+  }
+  select.value=hiddenSubjects.has(value)?'':value;
+}
+
+function renderResources(){
+  const term=$('#search').value.trim().toLocaleLowerCase('tr');
+  const subject=$('#subject-filter').value;
+  const level=$('#level-filter').value;
+  const rows=kaynaklar.filter(item=>!hiddenSubjects.has(item.ders)
+    &&(resourceType==='all'||item.tur===resourceType)
+    &&(!subject||item.ders===subject)
+    &&(!level||item.seviye===level)
+    &&(!term||(item.ders+' '+item.yayinci+' '+item.ad+' '+item.not).toLocaleLowerCase('tr').includes(term)));
+  const tbody=$('#resource-rows');tbody.replaceChildren();
+  for(const item of rows){
+    const tr=document.createElement('tr');if(done.has(item.id))tr.classList.add('done');
+    tr.append(text('td',item.ders,'subject'));
+    const nameCell=document.createElement('td');
+    const name=text('div',item.ad,'resource-name');
+    name.append(text('small',item.yayinci));nameCell.append(name);tr.append(nameCell);
+    const typeCell=document.createElement('td');typeCell.append(text('span',turAdlari[item.tur],'type-tag type-'+item.tur));tr.append(typeCell);
+    const levelCell=document.createElement('td');levelCell.append(text('span',item.seviye==='temel'?'Temel → Orta':'Orta','level-tag '+item.seviye));tr.append(levelCell);
+    tr.append(text('td',item.not,'note-cell'));
+    const linkCell=document.createElement('td');linkCell.className='link-cell';
+    if(item.url){const a=text('a',(item.baglanti||'Bağlantı')+' ↗');a.href=item.url;a.target='_blank';a.rel='noopener noreferrer';linkCell.append(a)}
+    else linkCell.append(text('span','—','no-link'));
+    tr.append(linkCell);
+    const actions=document.createElement('td');actions.className='actions';
+    const selected=saved.has(item.id);
+    const pick=actionButton(selected?'Seçildi':'Seç','select-source'+(selected?' selected':''),'toggleSave',item.id,item.ad+(selected?' seçimini kaldır':' kaynağını seç'));
+    pick.setAttribute('aria-pressed',String(selected));
+    const finished=done.has(item.id);
+    const complete=actionButton('✓','row-button'+(finished?' selected':''),'toggleDone',item.id,item.ad+(finished?' tamamlandı işaretini kaldır':' tamamlandı işaretle'));
+    complete.title='Tamamlandı';complete.setAttribute('aria-pressed',String(finished));
+    actions.append(pick,complete);tr.append(actions);tbody.append(tr);
+  }
+  $('#empty-state').hidden=rows.length!==0;
+  $('#result-count').textContent=rows.length+' kaynak';
+}
+
+function renderAll(){
+  updateSubjectOptions();
+  renderOverview();
+  renderResources();
+}
+
+function showPage(){
+  const page=location.hash==='#kaynaklar'?'kaynaklar':'genel';
+  $('#overview-page').hidden=page!=='genel';
+  $('#resources-page').hidden=page!=='kaynaklar';
+  $('#page-title').textContent=page==='genel'?'Genel bakış':'Kaynaklar';
+  document.querySelectorAll('[data-page]').forEach(link=>{
+    const current=link.dataset.page===page;
+    link.classList.toggle('active',current);
+    if(current)link.setAttribute('aria-current','page');else link.removeAttribute('aria-current');
+  });
+}
+
 document.addEventListener('DOMContentLoaded',()=>{
-  $('#subject-count').textContent=new Set(kaynaklar.map(k=>k.ders)).size;
-  $('#resource-count').textContent=kaynaklar.length;
-  for(const subject of [...new Set(kaynaklar.map(k=>k.ders))].sort((a,b)=>a.localeCompare(b,'tr'))){const option=text('option',subject);option.value=subject;$('#subject-filter').append(option)}
-  $('#nav').addEventListener('click',event=>{const button=event.target.closest('[data-view]');if(!button)return;view=button.dataset.view;document.querySelectorAll('.nav-item').forEach(item=>item.classList.toggle('active',item===button));const titles={genel:'Tüm kaynaklar',video:'Video kampları',kitap:'Soru bankaları',foy:'VDK / föyler',kaydedilen:'Kaydedilen kaynaklar'};$('#table-title').textContent=titles[view];render()});
-  for(const id of ['search','subject-filter','level-filter'])$('#'+id).addEventListener(id==='search'?'input':'change',render);
-  $('#clear-filters').addEventListener('click',()=>{$('#search').value='';$('#subject-filter').value='';$('#level-filter').value='';render()});
-  $('#resource-rows').addEventListener('click',event=>{const button=event.target.closest('[data-action]');if(!button)return;const set=button.dataset.action==='save'?saved:done;const id=Number(button.dataset.id);if(set.has(id))set.delete(id);else set.add(id);persist();render()});
-  $('#theme-toggle').addEventListener('click',()=>{const current=document.documentElement.dataset.tema|| (matchMedia('(prefers-color-scheme: dark)').matches?'koyu':'acik');const next=current==='koyu'?'acik':'koyu';document.documentElement.dataset.tema=next;try{localStorage.setItem('tyt_tema',next)}catch{}});
-  render();
+  $('#subject-cards').addEventListener('click',event=>{
+    const hide=event.target.closest('[data-hide-subject]');
+    if(hide){hiddenSubjects.add(hide.dataset.hideSubject);persist();$('#hidden-subjects').open=true;renderAll();return}
+    const remove=event.target.closest('[data-remove-choice]');
+    if(remove){saved.delete(Number(remove.dataset.removeChoice));persist();renderAll();return}
+    const choose=event.target.closest('[data-choose-subject]');
+    if(choose){
+      $('#search').value='';$('#level-filter').value='';
+      resourceType='all';
+      document.querySelectorAll('[data-type]').forEach(button=>{const active=button.dataset.type==='all';button.classList.toggle('active',active);button.setAttribute('aria-pressed',String(active))});
+      $('#subject-filter').value=choose.dataset.chooseSubject;
+      renderResources();
+    }
+  });
+  $('#hidden-list').addEventListener('click',event=>{
+    const restore=event.target.closest('[data-restore-subject]');
+    if(!restore)return;
+    hiddenSubjects.delete(restore.dataset.restoreSubject);persist();renderAll();
+  });
+  $('#resource-rows').addEventListener('click',event=>{
+    const pick=event.target.closest('[data-toggle-save]');
+    if(pick){const id=Number(pick.dataset.toggleSave);if(saved.has(id))saved.delete(id);else saved.add(id);persist();renderAll();return}
+    const complete=event.target.closest('[data-toggle-done]');
+    if(complete){const id=Number(complete.dataset.toggleDone);if(done.has(id))done.delete(id);else done.add(id);persist();renderAll()}
+  });
+  $('#type-filters').addEventListener('click',event=>{
+    const button=event.target.closest('[data-type]');
+    if(!button)return;
+    resourceType=button.dataset.type;
+    document.querySelectorAll('[data-type]').forEach(item=>{const active=item===button;item.classList.toggle('active',active);item.setAttribute('aria-pressed',String(active))});
+    renderResources();
+  });
+  for(const id of ['search','subject-filter','level-filter'])$('#'+id).addEventListener(id==='search'?'input':'change',renderResources);
+  $('#clear-filters').addEventListener('click',()=>{$('#search').value='';$('#subject-filter').value='';$('#level-filter').value='';renderResources()});
+  $('#theme-toggle').addEventListener('click',()=>{const current=document.documentElement.dataset.tema||(matchMedia('(prefers-color-scheme: dark)').matches?'koyu':'acik');const next=current==='koyu'?'acik':'koyu';document.documentElement.dataset.tema=next;try{localStorage.setItem('tyt_tema',next)}catch{}});
+  window.addEventListener('hashchange',showPage);
+  renderAll();showPage();
 });

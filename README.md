@@ -6,9 +6,11 @@
 
 ## Özellikler
 
-- Kaynak türüne, derse ve seviyeye göre filtreleme; metin araması
+- Genel bakışta ders kutuları ve seçilen video, soru bankası, VDK / föy kaynakları
+- Ders gizleme ve Genel bakış altındaki açılır bölümden geri getirme
+- Ayrı Kaynaklar sayfasında video, soru bankası ve VDK filtreleri; ders/seviye filtresi ve metin araması
 - Video bağlantılarında ders videosu ile oynatma listesi ayrımı
-- Kaydetme ve tamamlandı işaretleri (`localStorage`)
+- Seçim, gizleme ve tamamlandı işaretleri (`localStorage`)
 - Açık/koyu tema; CRN Atlas renkleri ve arayüz dili
 - Telefonda yatay kaydırılabilir kaynak tablosu
 
