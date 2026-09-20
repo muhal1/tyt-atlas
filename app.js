@@ -1,7 +1,7 @@
 // Kaynaklar, 20 Eylül 2026 tarihli TYT Kaynak Araştırması konuşmasından derlendi.
 // Bağlantısı doğrulanmamış ürünler için satış bağlantısı uydurulmaz.
 const kaynaklar = [
-  ['Matematik','Bıyıklı Matematik','55 Günde TYT Matematik 2027','video','temel','Ana kamp · temel → orta','https://www.youtube.com/watch?v=DV0tZzKFbw0','Ders videosu'],
+  ['Matematik','Bıyıklı Matematik','55 Günde TYT Matematik 2027','video','temel','Ana kamp · temel → orta','https://www.youtube.com/watch?v=bxT6Aq0oKnE&list=PL2wqvRc1FjTlt-yzGniaw8APzbPI4fTxm','Oynatma listesi'],
   ['Matematik','Bıyıklı Matematik','55 Günde TYT Matematik oynatma listesi','video','temel','Eski kamp oynatma listesi','https://youtube.com/playlist?list=PL2wqvRc1FjTkbSgOYlcnLhgojLISWQKPQ','Oynatma listesi'],
   ['Matematik','Rehber Matematik','49 Günde TYT Matematik 2027','video','temel','Daha yavaş anlatım alternatifi','https://www.youtube.com/watch?v=2_p7WgLjshw','Ders videosu'],
   ['Matematik','Bıyıklı Matematik','10 Günde Matematik Temeli Atma','video','temel','Dört işlem ve kesirlerde eksik varsa önce bunu izle','https://www.youtube.com/playlist?list=PLmHUXVybN_QLYKnFoJz0jjkV1rW9ddQPN','Oynatma listesi'],
