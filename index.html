@@ -1,0 +1,65 @@
+<!doctype html>
+<html lang="tr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="theme-color" content="#eef1f6">
+  <meta name="description" content="2027 TYT için temel ve orta seviyeye uygun video, soru bankası ve video ders kitabı kaynakları.">
+  <title>TYT Atlas | Kaynak Rehberi</title>
+  <link rel="stylesheet" href="style.css">
+  <script>try{const t=localStorage.getItem('tyt_tema');if(t==='acik'||t==='koyu')document.documentElement.dataset.tema=t}catch{}</script>
+  <script src="app.js" defer></script>
+</head>
+<body>
+  <div class="layout">
+    <aside class="sidebar cam" aria-label="Bölümler">
+      <div class="brand"><span class="brand-mark">T</span><span>TYT <b>Atlas</b><small>2027 KAYNAK REHBERİ</small></span></div>
+      <nav id="nav" aria-label="Kaynak türü">
+        <button class="nav-item active" data-view="genel" type="button"><span>▦</span> Genel bakış</button>
+        <button class="nav-item" data-view="video" type="button"><span>▶</span> Video kampları</button>
+        <button class="nav-item" data-view="kitap" type="button"><span>▤</span> Soru bankaları</button>
+        <button class="nav-item" data-view="foy" type="button"><span>◫</span> VDK / föyler</button>
+        <button class="nav-item" data-view="kaydedilen" type="button"><span>☆</span> Kaydedilenler</button>
+      </nav>
+      <div class="sidebar-foot">Temel → Orta seviye<br><span>20 Eylül 2026 araştırması</span></div>
+    </aside>
+
+    <div class="main-shell">
+      <header class="topbar cam">
+        <div><div class="eyebrow">KAYNAK KÜTÜPHANESİ <span class="top-separator">/</span> 2027 YKS</div><h1 id="page-title">TYT kaynaklarını keşfet</h1></div>
+        <button id="theme-toggle" class="icon-button" type="button" aria-label="Temayı değiştir" title="Temayı değiştir">◐</button>
+      </header>
+
+      <main>
+        <section class="intro">
+          <div><span class="pill highlight">2027 TYT • TEMEL / ORTA</span><h2>Doğru kaynakla<br><em>sağlam bir başlangıç.</em></h2><p>Video kampı, soru bankası ve ders föylerini tek tabloda karşılaştır. İşine yarayanları kaydet, çalıştıklarını işaretle.</p></div>
+          <div class="intro-aside"><strong>Başlangıç rotası</strong><p>Her ders için bir ana video serisi, videoyla uyumlu bir VDK ve bir soru bankası seç. Önce temeli bitir, sonra orta seviyeye geç.</p><a href="#kaynaklar" class="text-link">Kaynaklara göz at <span aria-hidden="true">↗</span></a></div>
+        </section>
+
+        <section class="metrics" aria-label="Özet">
+          <div class="metric"><span>KAPSANAN ALAN</span><strong id="subject-count">—</strong><small>Ders ve alt başlıklar</small></div>
+          <div class="metric"><span>TOPLAM KAYNAK</span><strong id="resource-count">—</strong><small>Video, kitap, VDK</small></div>
+          <div class="metric"><span>KAYDEDİLEN</span><strong id="saved-count">0</strong><small>Bu tarayıcıda</small></div>
+          <div class="metric"><span>TAMAMLANAN</span><strong id="done-count">0</strong><small>Bu tarayıcıda</small></div>
+        </section>
+
+        <section id="kaynaklar" class="resources">
+          <div class="section-heading"><div><span class="eyebrow">KAYNAK TABLOSU</span><h2 id="table-title">Tüm kaynaklar</h2></div><span id="result-count" class="count-badge" role="status"></span></div>
+          <div class="filters cam">
+            <label class="search"><span aria-hidden="true">⌕</span><input id="search" type="search" placeholder="Ders, hoca veya kaynak ara..." autocomplete="off" aria-label="Kaynak ara"></label>
+            <label class="select-wrap"><span>Ders</span><select id="subject-filter" aria-label="Derse göre filtrele"><option value="">Tüm dersler</option></select></label>
+            <label class="select-wrap"><span>Seviye</span><select id="level-filter" aria-label="Seviyeye göre filtrele"><option value="">Tüm seviyeler</option><option value="temel">Temel</option><option value="orta">Orta</option></select></label>
+            <button id="clear-filters" class="quiet-button" type="button">Temizle</button>
+          </div>
+          <div class="table-wrap"><table><thead><tr><th scope="col">DERS / ALAN</th><th scope="col">KAYNAK</th><th scope="col">TÜR</th><th scope="col">SEVİYE</th><th scope="col">NOT</th><th scope="col">BAĞLANTI</th><th scope="col" class="actions-head">DURUM</th></tr></thead><tbody id="resource-rows"></tbody></table><div id="empty-state" class="empty" hidden>Bu filtrelerle eşleşen kaynak yok. Aramayı veya filtreleri değiştir.</div></div>
+          <p class="table-note">☆ Kaydet ve ✓ Tamamlandı tercihleri yalnızca bu tarayıcıda saklanır. Satın almadan önce kitabın baskısını ve güncelliğini kontrol et.</p>
+        </section>
+
+        <section class="notes-grid" aria-label="Kullanım notları"><article class="note-card"><span class="note-icon">01</span><h3>Video + VDK</h3><p>Video ders kitabını izlediğin hocayla eşleştir. Kamp sırasında aynı sayfaları takip etmek konuyu pekiştirir.</p></article><article class="note-card"><span class="note-icon">02</span><h3>Tek soru bankasıyla başla</h3><p>Önce temel düzeyde bir kitap bitir. İkinci kaynağa ihtiyacı netlerin ve yanlışların belirlesin.</p></article><article class="note-card"><span class="note-icon">03</span><h3>Paragrafta düzenli pratik</h3><p>Uzun video kampı yerine günlük soru çözümü ve yanlış analiziyle ilerle.</p></article></section>
+        <footer>TYT Atlas · 20 Eylül 2026 kaynak araştırması · Resmî memnuniyet oranı veya sıralaması değildir.</footer>
+      </main>
+    </div>
+  </div>
+</body>
+</html>
+
