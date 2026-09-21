@@ -223,12 +223,52 @@ function renderCart(){
     list.append(li);
   }
 }
+
+function renderSchedule(){
+  const fallback=kaynaklar.find(item=>item.ders==='Fizik'&&item.yayinci==='VIP Fizik'&&item.tur==='video');
+  const selected=kaynaklar.find(item=>item.ders==='Fizik'&&item.tur==='video'&&saved.has(item.id));
+  const source=selected||fallback;
+  const physicsName=source?source.yayinci+' · '+source.ad:'Seçtiğin fizik kampı';
+  const cell=(tag,title,detail,className='')=>`<td class="${className}"><span class="lesson-tag ${tag}">${tag==='practice'?'Uygulama':tag==='review'?'Tekrar':tag==='paragraph'?'Paragraf':tag==='math'?'Matematik':tag==='physics'?'Fizik':tag==='school'?'Okul':tag==='rest'?'Serbest':'Problem'}</span><strong>${title}</strong><small${tag==='physics'?' class="schedule-physics-name"':''}>${detail}</small></td>`;
+  const paragraph=cell('paragraph','10 soru','Süre tut + yanlış işaretle');
+  const math=cell('math','Temel kamp · 1 ders','Videoyu izle, kısa not al');
+  const problem=cell('problem','10 soru','Ağır konu yok');
+  const school=cell('school','13:30 evden çıkış','19:30 eve dönüş');
+  const rest=cell('rest','Dinlenme / sosyal zaman','Ek ders zorunlu değil','weekend');
+  $('#weekly-plan').innerHTML=`
+    <table class="weekly-plan">
+      <thead><tr><th scope="col">Saat</th><th scope="col">Pazartesi</th><th scope="col">Salı</th><th scope="col">Çarşamba</th><th scope="col">Perşembe</th><th scope="col">Cuma</th><th scope="col" class="weekend">Cumartesi</th><th scope="col" class="weekend">Pazar</th></tr></thead>
+      <tbody>
+        <tr><th scope="row"><strong>10:00–10:25</strong><small>Güne giriş</small></th>${paragraph.repeat(5)}${cell('paragraph','10 soru','Süre tut + yanlış işaretle','weekend').repeat(2)}</tr>
+        <tr><th scope="row"><strong>10:35–11:45</strong><small>Ana blok</small></th>${math.repeat(5)}${cell('math','Temel kamp · 1 ders','Eksik dersi de tamamla','weekend')}${cell('math','Temel kamp · 1 ders','Haftanın son dersi','weekend')}</tr>
+        <tr><th scope="row"><strong>12:00–13:00</strong><small>Pekiştirme</small></th>
+          ${cell('practice','15 temel matematik','Sabahki konudan')}
+          ${cell('physics','1 ders videosu',physicsName)}
+          ${cell('practice','15 temel matematik','Yanlışları düzelt')}
+          ${cell('physics','1 ders videosu',physicsName)}
+          ${cell('practice','15 temel matematik','Haftalık eksikleri gör')}
+          ${cell('physics','1 ders + 10 soru',physicsName,'weekend')}
+          ${cell('review','45 dk haftalık tekrar','Matematik + fizik yanlışları','weekend')}
+        </tr>
+        <tr class="school-row"><th scope="row"><strong>13:30–19:30</strong><small>Gün ortası</small></th>${school.repeat(5)}${rest}${cell('rest','Dinlenme / sosyal zaman','Yeni haftaya enerji bırak','weekend')}</tr>
+        <tr><th scope="row"><strong>20:30–21:00</strong><small>Hafif akşam</small></th>${problem.repeat(5)}${cell('problem','10 soru','Ritmi koru','weekend').repeat(2)}</tr>
+        <tr class="wind-down-row"><th scope="row"><strong>21:00–00:00</strong><small>Kapanış</small></th><td colspan="7"><strong>Ders bitti.</strong> En fazla 10 dakika yanlışlara bak; kalan zaman dinlenme ve uykuya hazırlık. <b>00:00'da uyku.</b></td></tr>
+      </tbody>
+    </table>`;
+  $('#physics-priority-name').textContent=physicsName;
+  const link=$('#physics-plan-source');
+  link.querySelector('strong').textContent=physicsName;
+  if(source&&source.url){link.href=source.url;link.removeAttribute('aria-disabled')}
+  else{link.removeAttribute('href');link.setAttribute('aria-disabled','true')}
+}
+
 function showPage(){
-  const page=location.hash==='#kaynaklar'?'kaynaklar':location.hash==='#sepet'?'sepet':'genel';
+  const page=location.hash==='#program'?'program':location.hash==='#kaynaklar'?'kaynaklar':location.hash==='#sepet'?'sepet':'genel';
   $('#overview-page').hidden=page!=='genel';
+  $('#schedule-page').hidden=page!=='program';
   $('#resources-page').hidden=page!=='kaynaklar';
   $('#cart-page').hidden=page!=='sepet';
-  $('#page-title').textContent={genel:'Genel bakış',kaynaklar:'Kaynaklar',sepet:'Alışveriş Sepeti'}[page];
+  $('#page-title').textContent={genel:'Genel bakış',program:'Çalışma Programı',kaynaklar:'Kaynaklar',sepet:'Alışveriş Sepeti'}[page];
   document.querySelectorAll('[data-page]').forEach(link=>{
     const current=link.dataset.page===page;
     link.classList.toggle('active',current);
@@ -242,7 +282,7 @@ document.addEventListener('DOMContentLoaded',()=>{
     const hide=event.target.closest('[data-hide-subject]');
     if(hide){hiddenSubjects.add(hide.dataset.hideSubject);persist();$('#hidden-subjects').open=true;renderAll();return}
     const remove=event.target.closest('[data-remove-choice]');
-    if(remove){saved.delete(Number(remove.dataset.removeChoice));persist();renderAll();return}
+    if(remove){saved.delete(Number(remove.dataset.removeChoice));persist();renderAll();renderSchedule();return}
     const choose=event.target.closest('[data-choose-subject]');
     if(choose){
       $('#search').value='';$('#level-filter').value='';
@@ -259,7 +299,7 @@ document.addEventListener('DOMContentLoaded',()=>{
   });
   $('#resource-rows').addEventListener('click',event=>{
     const pick=event.target.closest('[data-toggle-save]');
-    if(pick){const id=Number(pick.dataset.toggleSave);if(saved.has(id))saved.delete(id);else saved.add(id);persist();renderAll();return}
+    if(pick){const id=Number(pick.dataset.toggleSave);if(saved.has(id))saved.delete(id);else saved.add(id);persist();renderAll();renderSchedule();return}
     const complete=event.target.closest('[data-toggle-done]');
     if(complete){const id=Number(complete.dataset.toggleDone);if(done.has(id))done.delete(id);else done.add(id);persist();renderAll()}
   });
@@ -295,5 +335,5 @@ document.addEventListener('DOMContentLoaded',()=>{
   });
   $('#theme-toggle').addEventListener('click',()=>{const current=document.documentElement.dataset.tema||(matchMedia('(prefers-color-scheme: dark)').matches?'koyu':'acik');const next=current==='koyu'?'acik':'koyu';document.documentElement.dataset.tema=next;try{localStorage.setItem('tyt_tema',next)}catch{}});
   window.addEventListener('hashchange',showPage);
-  renderAll();renderCart();showPage();
+  renderAll();renderCart();renderSchedule();showPage();
 });

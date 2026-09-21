@@ -86,3 +86,54 @@
 .cart-item-copy p{white-space:pre-wrap;overflow-wrap:anywhere;color:var(--soluk);font-size:12px;margin:5px 0 0}
 .cart-remove{flex:none}
 @media(max-width:850px){.cart-layout{grid-template-columns:1fr}}
+
+/* Haftalık çalışma programı */
+.schedule-intro{display:grid;grid-template-columns:minmax(0,1fr) minmax(420px,.8fr);gap:34px;align-items:end;padding:12px 0 26px;border-bottom:1px solid var(--cizgi)}
+.schedule-intro h2{font-size:clamp(31px,3.8vw,49px);line-height:1.1;letter-spacing:-.05em;margin:16px 0 13px}
+.schedule-intro h2 em{color:var(--vurgu);font-style:normal}
+.schedule-intro p{max-width:660px;margin:0;color:var(--soluk)}
+.schedule-hours{display:grid;grid-template-columns:repeat(4,1fr);border:1px solid var(--cizgi);border-radius:var(--r);background:var(--kart);overflow:hidden}
+.schedule-hours div{display:grid;gap:2px;padding:14px 12px;border-left:1px solid var(--cizgi)}
+.schedule-hours div:first-child{border-left:0}
+.schedule-hours span{font-size:17px;font-weight:760;letter-spacing:-.03em;color:var(--vurgu)}
+.schedule-hours strong{font-size:10px;color:var(--soluk);font-weight:650}
+.plan-principles{display:grid;grid-template-columns:repeat(4,1fr);gap:11px;margin:22px 0 32px}
+.plan-principles article{display:grid;align-content:start;gap:5px;min-height:126px;padding:17px;border:1px solid var(--cizgi);border-top:3px solid var(--vurgu);border-radius:var(--r);background:var(--kart)}
+.plan-principles article>span,.plan-sources a>span{color:var(--vurgu);font-size:9px;font-weight:800;letter-spacing:.13em}
+.plan-principles strong{font-size:14px;line-height:1.35}
+.plan-principles small{color:var(--soluk);font-size:11px;line-height:1.45}
+.plan-principles .light-rule{border-top-color:var(--yesil)}
+.schedule-section-heading{display:flex;justify-content:space-between;align-items:end;gap:16px;margin-bottom:12px}
+.schedule-section-heading h3,.plan-sources h3{margin:2px 0 0;font-size:21px;letter-spacing:-.025em}
+.weekly-plan-wrap{overflow-x:auto;border:1px solid var(--cizgi);border-radius:var(--r);background:var(--kart)}
+.weekly-plan{min-width:1180px;table-layout:fixed}
+.weekly-plan th,.weekly-plan td{border-right:1px solid var(--cizgi)}
+.weekly-plan th:last-child,.weekly-plan td:last-child{border-right:0}
+.weekly-plan thead th{padding:13px 10px;text-align:center;background:var(--kart-2)}
+.weekly-plan thead th:first-child{width:130px;text-align:left}
+.weekly-plan thead .weekend{background:color-mix(in srgb,var(--vurgu) 7%,var(--kart-2))}
+.weekly-plan tbody th{width:130px;padding:13px 11px;background:var(--kart-2);vertical-align:top}
+.weekly-plan tbody th strong,.weekly-plan td strong{display:block;font-size:11px;line-height:1.35}
+.weekly-plan tbody th small,.weekly-plan td small{display:block;margin-top:3px;color:var(--soluk);font-size:10px;line-height:1.35}
+.weekly-plan td{height:100px;padding:11px 10px;vertical-align:top}
+.weekly-plan td.weekend{background:color-mix(in srgb,var(--vurgu) 3%,var(--kart))}
+.lesson-tag{display:inline-block;margin-bottom:7px;padding:3px 6px;border-radius:3px;background:color-mix(in srgb,var(--vurgu) 11%,transparent);color:var(--vurgu);font-size:9px;font-weight:800;letter-spacing:.07em;text-transform:uppercase}
+.lesson-tag.paragraph{background:color-mix(in srgb,var(--mor) 11%,transparent);color:var(--mor)}
+.lesson-tag.physics{background:color-mix(in srgb,var(--mavi) 12%,transparent);color:var(--mavi)}
+.lesson-tag.practice,.lesson-tag.review{background:color-mix(in srgb,var(--turuncu) 12%,transparent);color:var(--turuncu)}
+.lesson-tag.problem{background:color-mix(in srgb,var(--yesil) 11%,transparent);color:var(--yesil)}
+.lesson-tag.school,.lesson-tag.rest{background:var(--kart-2);color:var(--soluk)}
+.school-row td{background:color-mix(in srgb,var(--notr) 4%,var(--kart))}
+.school-row td.weekend{background:color-mix(in srgb,var(--yesil) 4%,var(--kart))}
+.wind-down-row th,.wind-down-row td{background:color-mix(in srgb,var(--yesil) 6%,var(--kart));height:auto}
+.wind-down-row td{padding:14px;color:var(--soluk);font-size:11px}
+.wind-down-row td strong{display:inline;color:var(--yazi)}
+.plan-sources{display:grid;grid-template-columns:minmax(210px,.7fr) repeat(2,minmax(260px,1fr));gap:12px;align-items:stretch;margin:22px 0 40px}
+.plan-sources>div,.plan-sources>a{padding:17px;border:1px solid var(--cizgi);border-radius:var(--r);background:var(--kart)}
+.plan-sources>a{display:grid;gap:5px;color:var(--yazi);text-decoration:none}
+.plan-sources>a:hover{border-color:var(--vurgu)}
+.plan-sources>a strong{font-size:12px;line-height:1.4}
+.plan-sources>a small{color:var(--vurgu);font-size:10px;font-weight:700}
+.plan-sources>a[aria-disabled=true]{pointer-events:none}
+@media(max-width:1100px){.schedule-intro{grid-template-columns:1fr}.plan-principles{grid-template-columns:repeat(2,1fr)}.plan-sources{grid-template-columns:1fr 1fr}.plan-sources>div{grid-column:1/-1}}
+@media(max-width:700px){.schedule-intro h2{font-size:34px}.schedule-hours{grid-template-columns:repeat(2,1fr)}.schedule-hours div:nth-child(3){border-left:0;border-top:1px solid var(--cizgi)}.schedule-hours div:nth-child(4){border-top:1px solid var(--cizgi)}.plan-principles{grid-template-columns:1fr}.plan-principles article{min-height:0}.schedule-section-heading{align-items:start;flex-direction:column}.plan-sources{grid-template-columns:1fr}.plan-sources>div{grid-column:auto}.weekly-plan-wrap{margin-right:-20px;border-radius:var(--r) 0 0 var(--r)}}
