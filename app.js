@@ -66,8 +66,6 @@ const readSet=(key,convert=value=>value)=>{try{const value=JSON.parse(localStora
 const saved=new Set([...readSet('tyt_kaydedilen',Number)].filter(id=>id!==2));
 const done=new Set([...readSet('tyt_tamamlanan',Number)].filter(id=>id!==2));
 const hiddenSubjects=readSet('tyt_gizlenen_dersler',String);
-const cartKey='tyt_alisveris_sepeti';
-const cart=(()=>{try{const value=JSON.parse(localStorage.getItem(cartKey)||'[]');return Array.isArray(value)?value.filter(item=>item&&typeof item.id==='string'&&typeof item.url==='string'&&typeof item.name==='string'&&typeof item.note==='string'&&cartUrl(item.url)):[]}catch{return []}})();
 const subjects=[...new Set(kaynaklar.map(item=>item.ders))];
 let resourceType='all';
 const cloudConfig=window.TYT_ATLAS_SUPABASE||{};
@@ -84,7 +82,6 @@ function persistLocal(){
     localStorage.setItem('tyt_kaydedilen',JSON.stringify([...saved]));
     localStorage.setItem('tyt_tamamlanan',JSON.stringify([...done]));
     localStorage.setItem('tyt_gizlenen_dersler',JSON.stringify([...hiddenSubjects]));
-    localStorage.setItem(cartKey,JSON.stringify(cart));
     return true;
   }catch{return false}
 }
@@ -98,6 +95,7 @@ function setCloudStatus(label,state=''){
 
 function updateAccountUI(){
   const signedIn=Boolean(cloudUser);
+  document.body.classList.toggle('auth-locked',!signedIn);
   $('#signed-out-panel').hidden=signedIn;
   $('#signed-in-panel').hidden=!signedIn;
   document.querySelectorAll('[data-page]:not([data-page="giris"])').forEach(link=>{link.hidden=!signedIn});
@@ -111,6 +109,8 @@ function updateAccountUI(){
 }
 
 function defaultDisplayName(user){
+  const metadataName=typeof user?.user_metadata?.display_name==='string'?user.user_metadata.display_name.trim():'';
+  if(metadataName.length>=2)return metadataName.slice(0,60);
   const raw=(user?.email||'').split('@')[0].replace(/[._-]+/g,' ').trim();
   return (raw.length>=2?raw:'Kullanıcı').slice(0,60);
 }
@@ -140,18 +140,13 @@ function replaceSet(target,values,convert=value=>value){
   if(Array.isArray(values))for(const value of values)target.add(convert(value));
 }
 
-function validCart(value){
-  return Array.isArray(value)?value.filter(item=>item&&typeof item.id==='string'&&typeof item.url==='string'&&typeof item.name==='string'&&typeof item.note==='string'&&cartUrl(item.url)):[];
-}
-
 function applySharedState(row){
   cloudLoading=true;
   replaceSet(saved,(row.saved||[]).filter(id=>Number(id)!==2),Number);
   replaceSet(done,(row.done||[]).filter(id=>Number(id)!==2),Number);
   replaceSet(hiddenSubjects,row.hidden_subjects,String);
-  cart.splice(0,cart.length,...validCart(row.cart));
   persistLocal();
-  renderAll();renderCart();renderSchedule();
+  renderAll();renderSchedule();
   cloudLoading=false;
 }
 
@@ -161,7 +156,6 @@ function sharedPayload(){
     saved:[...saved],
     done:[...done],
     hidden_subjects:[...hiddenSubjects],
-    cart,
     updated_at:new Date().toISOString(),
     updated_by:cloudUser.id
   };
@@ -193,7 +187,7 @@ function persist(){
 async function loadSharedState(seedWhenMissing=false){
   if(!cloudClient||!cloudUser)return;
   setCloudStatus('Yükleniyor…','syncing');
-  const {data,error}=await cloudClient.from('panel_state').select('saved,done,hidden_subjects,cart,updated_at').eq('id','main').maybeSingle();
+  const {data,error}=await cloudClient.from('panel_state').select('saved,done,hidden_subjects,updated_at').eq('id','main').maybeSingle();
   if(error){
     console.error('Ortak pano yüklenemedi:',error);
     setCloudStatus('Bağlantı hatası','error');
@@ -354,31 +348,6 @@ function renderAll(){
   renderResources();
 }
 
-function cartUrl(value){
-  try{const url=new URL(value.trim());return ['https:','http:'].includes(url.protocol)?url.href:null}catch{return null}
-}
-
-function persistCart(){
-  const stored=persistLocal();
-  if(stored)queueCloudSave();
-  return stored;
-}
-
-function renderCart(){
-  const list=$('#cart-list');list.replaceChildren();
-  $('#cart-count').textContent=cart.length+' ürün';
-  $('#cart-empty').hidden=cart.length>0;
-  for(const item of cart){
-    const li=document.createElement('li');li.className='cart-item';
-    const copy=document.createElement('div');copy.className='cart-item-copy';
-    const link=text('a',item.name);link.href=item.url;link.target='_blank';link.rel='noopener noreferrer';
-    copy.append(link,text('small',new URL(item.url).hostname));
-    if(item.note)copy.append(text('p',item.note));
-    li.append(copy,actionButton('Kaldır','quiet-button cart-remove','removeCart',item.id,item.name+' ürününü sepetten kaldır'));
-    list.append(li);
-  }
-}
-
 function renderSchedule(){
   const fallback=kaynaklar.find(item=>item.ders==='Fizik'&&item.yayinci==='VIP Fizik'&&item.tur==='video');
   const selected=kaynaklar.find(item=>item.ders==='Fizik'&&item.tur==='video'&&saved.has(item.id));
@@ -416,7 +385,7 @@ function renderSchedule(){
 }
 
 function showPage(){
-  let page=location.hash==='#program'?'program':location.hash==='#kaynaklar'?'kaynaklar':location.hash==='#sepet'?'sepet':location.hash==='#giris'?'giris':'genel';
+  let page=location.hash==='#program'?'program':location.hash==='#kaynaklar'?'kaynaklar':location.hash==='#giris'?'giris':'genel';
   if(!authReady||!cloudUser){
     page='giris';
     if(authReady&&location.hash!=='#giris')history.replaceState(null,'','#giris');
@@ -424,9 +393,8 @@ function showPage(){
   $('#overview-page').hidden=page!=='genel';
   $('#schedule-page').hidden=page!=='program';
   $('#resources-page').hidden=page!=='kaynaklar';
-  $('#cart-page').hidden=page!=='sepet';
   $('#login-page').hidden=page!=='giris';
-  $('#page-title').textContent={genel:'Genel bakış',program:'Çalışma Programı',kaynaklar:'Kaynaklar',sepet:'Alışveriş Sepeti',giris:cloudUser?'Profil':'Giriş yap'}[page];
+  $('#page-title').textContent={genel:'Genel bakış',program:'Çalışma Programı',kaynaklar:'Kaynaklar',giris:cloudUser?'Profil':'Giriş yap'}[page];
   document.querySelectorAll('[data-page]').forEach(link=>{
     const current=link.dataset.page===page;
     link.classList.toggle('active',current);
@@ -471,30 +439,17 @@ document.addEventListener('DOMContentLoaded',()=>{
   });
   for(const id of ['search','subject-filter','level-filter'])$('#'+id).addEventListener(id==='search'?'input':'change',renderResources);
   $('#clear-filters').addEventListener('click',()=>{$('#search').value='';$('#subject-filter').value='';$('#level-filter').value='';renderResources()});
-  $('#cart-form').addEventListener('submit',event=>{
-    event.preventDefault();
-    if(!requireEditor())return;
-    const url=cartUrl($('#cart-url').value);
-    const error=$('#cart-error');error.hidden=true;
-    if(!url){error.textContent='Geçerli bir http veya https bağlantısı gir.';error.hidden=false;return}
-    if(cart.some(item=>item.url===url)){error.textContent='Bu bağlantı zaten sepette var.';error.hidden=false;return}
-    const name=$('#cart-name').value.trim()||new URL(url).hostname;
-    const item={id:crypto.randomUUID(),url,name,note:$('#cart-note').value.trim()};
-    cart.unshift(item);
-    if(!persistCart()){
-      cart.shift();error.textContent='Tarayıcı listeyi kaydedemedi. Depolama alanını kontrol et.';error.hidden=false;return;
-    }
-    $('#cart-form').reset();renderCart();$('#cart-url').focus();
-  });
-  $('#cart-list').addEventListener('click',event=>{
-    const button=event.target.closest('[data-remove-cart]');if(!button)return;
-    if(!requireEditor())return;
-    const index=cart.findIndex(item=>item.id===button.dataset.removeCart);if(index<0)return;
-    const removed=cart.splice(index,1)[0];
-    if(!persistCart()){cart.splice(index,0,removed);const error=$('#cart-error');error.textContent='Ürün kaldırma işlemi kaydedilemedi.';error.hidden=false;return}
-    renderCart();
-  });
   $('#cloud-account').addEventListener('click',()=>{pageBeforeLogin=location.hash||'#genel';location.hash='#giris'});
+  const switchAuthTab=signup=>{
+    $('#login-tab').classList.toggle('active',!signup);
+    $('#signup-tab').classList.toggle('active',signup);
+    $('#login-tab').setAttribute('aria-selected',String(!signup));
+    $('#signup-tab').setAttribute('aria-selected',String(signup));
+    $('#login-form').hidden=signup;
+    $('#signup-form').hidden=!signup;
+  };
+  $('#login-tab').addEventListener('click',()=>switchAuthTab(false));
+  $('#signup-tab').addEventListener('click',()=>switchAuthTab(true));
   $('#login-form').addEventListener('submit',async event=>{
     event.preventDefault();
     const error=$('#login-error');error.hidden=true;
@@ -514,6 +469,38 @@ document.addEventListener('DOMContentLoaded',()=>{
     updateAccountUI();
     event.currentTarget.reset();
     location.hash=pageBeforeLogin==='#giris'?'#genel':pageBeforeLogin;
+  });
+  $('#signup-form').addEventListener('submit',async event=>{
+    event.preventDefault();
+    const error=$('#signup-error');
+    const status=$('#signup-status');
+    error.hidden=true;status.hidden=true;
+    if(!cloudClient){error.textContent='Bağlantı kurulamadı.';error.hidden=false;return}
+    const displayName=$('#signup-name').value.trim();
+    const password=$('#signup-password').value;
+    if(displayName.length<2){error.textContent='Ad en az 2 karakter olmalı.';error.hidden=false;return}
+    if(password.length<8){error.textContent='Şifre en az 8 karakter olmalı.';error.hidden=false;return}
+    const submit=event.currentTarget.querySelector('button[type="submit"]');submit.disabled=true;
+    const {data:signupData,error:signupError}=await cloudClient.auth.signUp({
+      email:$('#signup-email').value.trim(),
+      password,
+      options:{
+        data:{display_name:displayName},
+        emailRedirectTo:window.location.origin+window.location.pathname
+      }
+    });
+    submit.disabled=false;
+    if(signupError){
+      error.textContent=signupError.code==='over_email_send_rate_limit'?'Bir süre sonra tekrar dene.':'Kayıt oluşturulamadı.';
+      error.hidden=false;return;
+    }
+    event.currentTarget.reset();
+    if(!signupData.session){status.textContent='E-postana gelen bağlantıyı aç.';status.hidden=false;return}
+    cloudUser=signupData.user;
+    await loadUserProfile();
+    await loadSharedState(true);
+    updateAccountUI();
+    location.hash='#genel';
   });
   $('#profile-form').addEventListener('submit',async event=>{
     event.preventDefault();
@@ -535,8 +522,10 @@ document.addEventListener('DOMContentLoaded',()=>{
     location.hash='#giris';
   });
   document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible')loadSharedState()});
-  $('#theme-toggle').addEventListener('click',()=>{const current=document.documentElement.dataset.tema||(matchMedia('(prefers-color-scheme: dark)').matches?'koyu':'acik');const next=current==='koyu'?'acik':'koyu';document.documentElement.dataset.tema=next;try{localStorage.setItem('tyt_tema',next)}catch{}});
+  const toggleTheme=()=>{const current=document.documentElement.dataset.tema||(matchMedia('(prefers-color-scheme: dark)').matches?'koyu':'acik');const next=current==='koyu'?'acik':'koyu';document.documentElement.dataset.tema=next;try{localStorage.setItem('tyt_tema',next)}catch{}};
+  $('#theme-toggle').addEventListener('click',toggleTheme);
+  $('#auth-theme-toggle').addEventListener('click',toggleTheme);
   window.addEventListener('hashchange',showPage);
-  renderAll();renderCart();renderSchedule();showPage();
+  renderAll();renderSchedule();showPage();
   initCloud();
 });

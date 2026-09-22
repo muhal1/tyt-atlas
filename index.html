@@ -12,7 +12,7 @@
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.116.0/dist/umd/supabase.min.js" defer></script>
   <script src="app.js" defer></script>
 </head>
-<body>
+<body class="auth-locked">
   <div class="layout">
     <aside class="sidebar cam" aria-label="Bölümler">
       <div class="brand"><span class="brand-mark">T</span><span>TYT <b>Atlas</b><small>2027 KAYNAK REHBERİ</small></span></div>
@@ -20,10 +20,8 @@
         <a class="nav-item active" data-page="genel" href="#genel" aria-current="page"><span aria-hidden="true">▦</span> Genel bakış</a>
         <a class="nav-item" data-page="program" href="#program"><span aria-hidden="true">◷</span> Çalışma Programı</a>
         <a class="nav-item" data-page="kaynaklar" href="#kaynaklar"><span aria-hidden="true">▤</span> Kaynaklar</a>
-        <a class="nav-item" data-page="sepet" href="#sepet"><span aria-hidden="true">▣</span> Alışveriş Sepeti</a>
         <a class="nav-item" data-page="giris" href="#giris"><span aria-hidden="true">◎</span> Profil</a>
       </nav>
-      <div class="sidebar-foot">Temel → Orta seviye<br><span>20 Eylül 2026 araştırması</span></div>
     </aside>
 
     <div class="main-shell">
@@ -99,53 +97,39 @@
           <div class="table-wrap"><table><thead><tr><th scope="col">DERS / ALAN</th><th scope="col">KAYNAK</th><th scope="col">TÜR</th><th scope="col">SEVİYE</th><th scope="col">NOT</th><th scope="col">BAĞLANTI</th><th scope="col" class="actions-head">TERCİH</th></tr></thead><tbody id="resource-rows"></tbody></table><div id="empty-state" class="empty" hidden>Bu filtrelerle eşleşen kaynak yok. Aramayı veya filtreleri değiştir.</div></div>
           <p class="table-note">Seçilen kaynaklar Genel bakışta görünür. Gizlenen dersleri Genel bakışın altındaki “Gizlenen dersler” bölümünden geri getirebilirsin. Ortak pano tüm cihazlarda aynı bilgileri gösterir; değişiklik için giriş gerekir. Mağaza puanları Eylül 2026 tarihli kullanıcı değerlendirmeleridir; satın almadan önce baskıyı ve satıcıyı kontrol et.</p>
         </section>
-        <section id="cart-page" class="page" aria-labelledby="cart-heading" hidden>
-          <div class="resources-intro"><span class="pill highlight">ORTAK LİSTE</span><h2 id="cart-heading">Alışveriş Sepeti</h2><p>Almayı planladığınız ürünlerin bağlantılarını burada biriktirin. Liste tüm telefon ve bilgisayarlarda ortak görünür.</p></div>
-          <div class="cart-layout">
-            <form id="cart-form" class="cart-form" autocomplete="off">
-              <h3>Yeni ürün ekle</h3>
-              <label for="cart-url">Ürün bağlantısı</label>
-              <input id="cart-url" name="url" type="url" inputmode="url" placeholder="https://..." required>
-              <label for="cart-name">Ürün adı <span>(isteğe bağlı)</span></label>
-              <input id="cart-name" name="name" type="text" maxlength="120" placeholder="Örn. TYT Matematik Soru Bankası">
-              <label for="cart-note">Not <span>(isteğe bağlı)</span></label>
-              <textarea id="cart-note" name="note" rows="3" maxlength="400" placeholder="Baskı yılı, mağaza veya karşılaştırma notu"></textarea>
-              <p id="cart-error" class="form-error" role="alert" hidden></p>
-              <button class="primary-link cart-submit" type="submit">Sepete ekle <span aria-hidden="true">＋</span></button>
-            </form>
-            <section class="cart-results" aria-labelledby="cart-list-heading">
-              <div class="section-heading"><div><span class="eyebrow">ALMAYI PLANLADIKLARIN</span><h3 id="cart-list-heading">Kaydedilen bağlantılar</h3></div><span id="cart-count" class="count-badge" role="status">0 ürün</span></div>
-              <p id="cart-empty" class="cart-empty">Henüz ürün eklenmedi. İlk bağlantıyı soldaki alana yapıştır.</p>
-              <ul id="cart-list" class="cart-list"></ul>
-            </section>
-          </div>
-        </section>
         <section id="login-page" class="page login-page" aria-labelledby="login-heading" hidden>
+          <button id="auth-theme-toggle" class="icon-button auth-theme-toggle" type="button" aria-label="Temayı değiştir">◐</button>
           <div class="login-shell">
-            <div class="login-visual">
-              <span class="pill highlight">ORTAK ÇALIŞMA ALANI</span>
-              <h2 id="login-heading">Aynı plan,<br><em>her cihazda.</em></h2>
-              <p>Kendi hesabınla giriş yap; seçilen kaynaklar, tamamlananlar ve alışveriş sepeti telefonda ve bilgisayarda aynı kalsın.</p>
-              <div class="login-benefits" aria-label="Ortak pano özellikleri">
-                <div><span aria-hidden="true">↻</span><strong>Anında ortak kayıt</strong><small>Değişiklikler tek panoya yazılır.</small></div>
-                <div><span aria-hidden="true">⌁</span><strong>Her cihazdan erişim</strong><small>Telefon, tablet ve bilgisayarda aynı veri.</small></div>
-                <div><span aria-hidden="true">◇</span><strong>Kişisel profil</strong><small>Her kullanıcı kendi adı ve e-postasıyla giriş yapar.</small></div>
-              </div>
+            <div class="auth-brand">
+              <span class="brand-mark">T</span>
+              <h2 id="login-heading">TYT <em>Atlas</em></h2>
+              <p>2027 Kaynak Rehberi</p>
             </div>
             <div class="account-card cam">
               <div id="signed-out-panel">
-                <span class="eyebrow">HESABINA GİRİŞ</span>
-                <h2>Tekrar hoş geldin</h2>
-                <p>Profiline ve ortak çalışma panosuna ulaşmak için giriş yap.</p>
+                <div class="auth-tabs" role="tablist" aria-label="Hesap işlemleri">
+                  <button id="login-tab" class="active" type="button" role="tab" aria-selected="true">Giriş yap</button>
+                  <button id="signup-tab" type="button" role="tab" aria-selected="false">Yeni kayıt</button>
+                </div>
                 <form id="login-form" class="login-form">
                   <label for="login-email">E-posta</label>
-                  <input id="login-email" name="email" type="email" autocomplete="username" placeholder="ornek@email.com" required>
+                  <input id="login-email" name="email" type="email" autocomplete="email" required>
                   <label for="login-password">Şifre</label>
-                  <input id="login-password" name="password" type="password" autocomplete="current-password" placeholder="Şifren" required>
+                  <input id="login-password" name="password" type="password" autocomplete="current-password" required>
                   <p id="login-error" class="form-error" role="alert" hidden></p>
-                  <button class="primary-link login-submit" type="submit">Giriş yap <span aria-hidden="true">→</span></button>
+                  <button class="primary-link login-submit" type="submit">Giriş yap</button>
                 </form>
-                <p class="login-help">Hesabın yoksa pano yöneticisinden senin için bir kullanıcı hesabı oluşturmasını iste.</p>
+                <form id="signup-form" class="login-form" hidden>
+                  <label for="signup-name">Adın</label>
+                  <input id="signup-name" name="display_name" type="text" minlength="2" maxlength="60" autocomplete="name" required>
+                  <label for="signup-email">E-posta</label>
+                  <input id="signup-email" name="email" type="email" autocomplete="email" required>
+                  <label for="signup-password">Şifre</label>
+                  <input id="signup-password" name="password" type="password" minlength="8" autocomplete="new-password" required>
+                  <p id="signup-error" class="form-error" role="alert" hidden></p>
+                  <p id="signup-status" class="profile-status" role="status" hidden></p>
+                  <button class="primary-link login-submit" type="submit">Hesap oluştur</button>
+                </form>
               </div>
               <div id="signed-in-panel" hidden>
                 <div class="signed-in-icon" aria-hidden="true">✓</div>
@@ -166,7 +150,6 @@
             </div>
           </div>
         </section>
-        <footer>TYT Atlas · 20 Eylül 2026 kaynak araştırması · Satın almadan önce baskıyı ve güncelliği kontrol et.</footer>
       </main>
     </div>
   </div>

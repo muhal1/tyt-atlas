@@ -93,5 +93,4 @@ to authenticated
 using ((select auth.uid()) = id)
 with check ((select auth.uid()) = id);
 
--- ÖNEMLİ: Authentication > Providers > Email altında yeni kullanıcı kaydını kapatın.
--- Authentication > Users ekranından yalnızca aile üyelerinin hesaplarını oluşturun.
+-- Authentication > Providers > Email altında yeni kullanıcı kaydı ve e-posta doğrulaması açık olmalıdır.
