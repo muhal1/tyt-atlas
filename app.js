@@ -70,13 +70,134 @@ const cartKey='tyt_alisveris_sepeti';
 const cart=(()=>{try{const value=JSON.parse(localStorage.getItem(cartKey)||'[]');return Array.isArray(value)?value.filter(item=>item&&typeof item.id==='string'&&typeof item.url==='string'&&typeof item.name==='string'&&typeof item.note==='string'&&cartUrl(item.url)):[]}catch{return []}})();
 const subjects=[...new Set(kaynaklar.map(item=>item.ders))];
 let resourceType='all';
+const cloudConfig=window.TYT_ATLAS_SUPABASE||{};
+let cloudClient=null;
+let cloudUser=null;
+let cloudLoading=false;
+let cloudSaveTimer=null;
+let pageBeforeLogin='#genel';
 
-function persist(){
+function persistLocal(){
   try{
     localStorage.setItem('tyt_kaydedilen',JSON.stringify([...saved]));
     localStorage.setItem('tyt_tamamlanan',JSON.stringify([...done]));
     localStorage.setItem('tyt_gizlenen_dersler',JSON.stringify([...hiddenSubjects]));
-  }catch{}
+    localStorage.setItem(cartKey,JSON.stringify(cart));
+    return true;
+  }catch{return false}
+}
+
+function setCloudStatus(label,state=''){
+  const labelEl=$('#cloud-label');
+  const dot=$('#cloud-dot');
+  if(labelEl)labelEl.textContent=label;
+  if(dot)dot.dataset.state=state;
+}
+
+function updateAccountUI(){
+  const signedIn=Boolean(cloudUser);
+  $('#signed-out-panel').hidden=signedIn;
+  $('#signed-in-panel').hidden=!signedIn;
+  $('#account-email').textContent=signedIn?cloudUser.email:'';
+  if(!cloudClient)setCloudStatus('Kurulum bekliyor','warning');
+  else if(signedIn)setCloudStatus('Düzenleme açık','online');
+  else setCloudStatus('Ortak pano','online');
+}
+
+function requireEditor(){
+  if(!cloudClient)return true;
+  if(cloudUser)return true;
+  if(location.hash!=='#giris')pageBeforeLogin=location.hash||'#genel';
+  location.hash='#giris';
+  return false;
+}
+
+function replaceSet(target,values,convert=value=>value){
+  target.clear();
+  if(Array.isArray(values))for(const value of values)target.add(convert(value));
+}
+
+function validCart(value){
+  return Array.isArray(value)?value.filter(item=>item&&typeof item.id==='string'&&typeof item.url==='string'&&typeof item.name==='string'&&typeof item.note==='string'&&cartUrl(item.url)):[];
+}
+
+function applySharedState(row){
+  cloudLoading=true;
+  replaceSet(saved,(row.saved||[]).filter(id=>Number(id)!==2),Number);
+  replaceSet(done,(row.done||[]).filter(id=>Number(id)!==2),Number);
+  replaceSet(hiddenSubjects,row.hidden_subjects,String);
+  cart.splice(0,cart.length,...validCart(row.cart));
+  persistLocal();
+  renderAll();renderCart();renderSchedule();
+  cloudLoading=false;
+}
+
+function sharedPayload(){
+  return {
+    id:'main',
+    saved:[...saved],
+    done:[...done],
+    hidden_subjects:[...hiddenSubjects],
+    cart,
+    updated_at:new Date().toISOString(),
+    updated_by:cloudUser.id
+  };
+}
+
+async function saveSharedState(){
+  if(!cloudClient||!cloudUser||cloudLoading)return;
+  setCloudStatus('Kaydediliyor…','syncing');
+  const {error}=await cloudClient.from('panel_state').upsert(sharedPayload(),{onConflict:'id'});
+  if(error){
+    console.error('Ortak pano kaydedilemedi:',error);
+    setCloudStatus('Senkron hatası','error');
+    return;
+  }
+  setCloudStatus('Düzenleme açık','online');
+}
+
+function queueCloudSave(){
+  if(!cloudClient||!cloudUser||cloudLoading)return;
+  clearTimeout(cloudSaveTimer);
+  cloudSaveTimer=setTimeout(saveSharedState,250);
+}
+
+function persist(){
+  persistLocal();
+  queueCloudSave();
+}
+
+async function loadSharedState(seedWhenMissing=false){
+  if(!cloudClient)return;
+  setCloudStatus('Yükleniyor…','syncing');
+  const {data,error}=await cloudClient.from('panel_state').select('saved,done,hidden_subjects,cart,updated_at').eq('id','main').maybeSingle();
+  if(error){
+    console.error('Ortak pano yüklenemedi:',error);
+    setCloudStatus('Bağlantı hatası','error');
+    return;
+  }
+  if(data)applySharedState(data);
+  else if(seedWhenMissing&&cloudUser)await saveSharedState();
+  setCloudStatus(cloudUser?'Düzenleme açık':'Ortak pano','online');
+}
+
+async function initCloud(){
+  const configured=typeof cloudConfig.url==='string'&&cloudConfig.url.startsWith('https://')
+    &&typeof cloudConfig.publishableKey==='string'&&cloudConfig.publishableKey.length>20;
+  if(!configured||!window.supabase){
+    updateAccountUI();
+    return;
+  }
+  cloudClient=window.supabase.createClient(cloudConfig.url,cloudConfig.publishableKey);
+  const {data:{session}}=await cloudClient.auth.getSession();
+  cloudUser=session?.user||null;
+  updateAccountUI();
+  await loadSharedState(Boolean(cloudUser));
+  cloudClient.auth.onAuthStateChange((_event,nextSession)=>{
+    cloudUser=nextSession?.user||null;
+    updateAccountUI();
+    if(cloudUser)setTimeout(()=>loadSharedState(true),0);
+  });
 }
 
 function actionButton(label,className,action,value,ariaLabel){
@@ -206,7 +327,9 @@ function cartUrl(value){
 }
 
 function persistCart(){
-  try{localStorage.setItem(cartKey,JSON.stringify(cart));return true}catch{return false}
+  const stored=persistLocal();
+  if(stored)queueCloudSave();
+  return stored;
 }
 
 function renderCart(){
@@ -230,18 +353,16 @@ function renderSchedule(){
   const source=selected||fallback;
   const physicsName=source?source.yayinci+' · '+source.ad:'Seçtiğin fizik kampı';
   const cell=(tag,title,detail,className='')=>`<td class="${className}"><span class="lesson-tag ${tag}">${tag==='practice'?'Uygulama':tag==='review'?'Tekrar':tag==='paragraph'?'Paragraf':tag==='math'?'Matematik':tag==='physics'?'Fizik':tag==='school'?'Okul':tag==='rest'?'Serbest':'Problem'}</span><strong>${title}</strong><small${tag==='physics'?' class="schedule-physics-name"':''}>${detail}</small></td>`;
-  const paragraph=cell('paragraph','10 soru','Süre tut + yanlış işaretle');
-  const math=cell('math','Temel kamp · 1 ders','Videoyu izle, kısa not al');
-  const problem=cell('problem','10 soru','Ağır konu yok');
+  const morning=cell('math','10 paragraf + temel kamp','Süre tut, ardından 1 ders');
+  const evening=cell('problem','Problem + tekrar','2 saatlik akşam çalışması');
   const school=cell('school','13:30 evden çıkış','19:30 eve dönüş');
   const rest=cell('rest','Dinlenme / sosyal zaman','Ek ders zorunlu değil','weekend');
   $('#weekly-plan').innerHTML=`
     <table class="weekly-plan">
       <thead><tr><th scope="col">Saat</th><th scope="col">Pazartesi</th><th scope="col">Salı</th><th scope="col">Çarşamba</th><th scope="col">Perşembe</th><th scope="col">Cuma</th><th scope="col" class="weekend">Cumartesi</th><th scope="col" class="weekend">Pazar</th></tr></thead>
       <tbody>
-        <tr><th scope="row"><strong>10:00–10:25</strong><small>Güne giriş</small></th>${paragraph.repeat(5)}${cell('paragraph','10 soru','Süre tut + yanlış işaretle','weekend').repeat(2)}</tr>
-        <tr><th scope="row"><strong>10:35–11:45</strong><small>Ana blok</small></th>${math.repeat(5)}${cell('math','Temel kamp · 1 ders','Eksik dersi de tamamla','weekend')}${cell('math','Temel kamp · 1 ders','Haftanın son dersi','weekend')}</tr>
-        <tr><th scope="row"><strong>12:00–13:00</strong><small>Pekiştirme</small></th>
+        <tr><th scope="row"><strong>09:00–10:45</strong><small>Sabah · 1. blok</small></th>${morning.repeat(5)}${cell('math','10 paragraf + temel kamp','Eksik dersi de tamamla','weekend')}${cell('math','10 paragraf + temel kamp','Haftanın son dersi','weekend')}</tr>
+        <tr><th scope="row"><strong>11:00–12:45</strong><small>Sabah · 2. blok</small></th>
           ${cell('practice','15 temel matematik','Sabahki konudan')}
           ${cell('physics','1 ders videosu',physicsName)}
           ${cell('practice','15 temel matematik','Yanlışları düzelt')}
@@ -251,8 +372,8 @@ function renderSchedule(){
           ${cell('review','45 dk haftalık tekrar','Matematik + fizik yanlışları','weekend')}
         </tr>
         <tr class="school-row"><th scope="row"><strong>13:30–19:30</strong><small>Gün ortası</small></th>${school.repeat(5)}${rest}${cell('rest','Dinlenme / sosyal zaman','Yeni haftaya enerji bırak','weekend')}</tr>
-        <tr><th scope="row"><strong>20:30–21:00</strong><small>Hafif akşam</small></th>${problem.repeat(5)}${cell('problem','10 soru','Ritmi koru','weekend').repeat(2)}</tr>
-        <tr class="wind-down-row"><th scope="row"><strong>21:00–00:00</strong><small>Kapanış</small></th><td colspan="7"><strong>Ders bitti.</strong> En fazla 10 dakika yanlışlara bak; kalan zaman dinlenme ve uykuya hazırlık. <b>00:00'da uyku.</b></td></tr>
+        <tr><th scope="row"><strong>20:00–22:00</strong><small>Akşam çalışması</small></th>${evening.repeat(5)}${cell('problem','Problem + tekrar','2 saatlik akşam çalışması','weekend').repeat(2)}</tr>
+        <tr class="wind-down-row"><th scope="row"><strong>22:00–00:00</strong><small>Kapanış</small></th><td colspan="7"><strong>Ders bitti.</strong> Kalan zaman dinlenme ve uykuya hazırlık. <b>00:00'da uyku.</b></td></tr>
       </tbody>
     </table>`;
   $('#physics-priority-name').textContent=physicsName;
@@ -263,12 +384,13 @@ function renderSchedule(){
 }
 
 function showPage(){
-  const page=location.hash==='#program'?'program':location.hash==='#kaynaklar'?'kaynaklar':location.hash==='#sepet'?'sepet':'genel';
+  const page=location.hash==='#program'?'program':location.hash==='#kaynaklar'?'kaynaklar':location.hash==='#sepet'?'sepet':location.hash==='#giris'?'giris':'genel';
   $('#overview-page').hidden=page!=='genel';
   $('#schedule-page').hidden=page!=='program';
   $('#resources-page').hidden=page!=='kaynaklar';
   $('#cart-page').hidden=page!=='sepet';
-  $('#page-title').textContent={genel:'Genel bakış',program:'Çalışma Programı',kaynaklar:'Kaynaklar',sepet:'Alışveriş Sepeti'}[page];
+  $('#login-page').hidden=page!=='giris';
+  $('#page-title').textContent={genel:'Genel bakış',program:'Çalışma Programı',kaynaklar:'Kaynaklar',sepet:'Alışveriş Sepeti',giris:'Aile Girişi'}[page];
   document.querySelectorAll('[data-page]').forEach(link=>{
     const current=link.dataset.page===page;
     link.classList.toggle('active',current);
@@ -277,12 +399,12 @@ function showPage(){
 }
 
 document.addEventListener('DOMContentLoaded',()=>{
-  persist(); // Kaldırılan kaynağın eski tarayıcı işaretlerini temizle.
+  persistLocal(); // Kaldırılan kaynağın eski tarayıcı işaretlerini temizle.
   $('#subject-cards').addEventListener('click',event=>{
     const hide=event.target.closest('[data-hide-subject]');
-    if(hide){hiddenSubjects.add(hide.dataset.hideSubject);persist();$('#hidden-subjects').open=true;renderAll();return}
+    if(hide){if(!requireEditor())return;hiddenSubjects.add(hide.dataset.hideSubject);persist();$('#hidden-subjects').open=true;renderAll();return}
     const remove=event.target.closest('[data-remove-choice]');
-    if(remove){saved.delete(Number(remove.dataset.removeChoice));persist();renderAll();renderSchedule();return}
+    if(remove){if(!requireEditor())return;saved.delete(Number(remove.dataset.removeChoice));persist();renderAll();renderSchedule();return}
     const choose=event.target.closest('[data-choose-subject]');
     if(choose){
       $('#search').value='';$('#level-filter').value='';
@@ -295,13 +417,14 @@ document.addEventListener('DOMContentLoaded',()=>{
   $('#hidden-list').addEventListener('click',event=>{
     const restore=event.target.closest('[data-restore-subject]');
     if(!restore)return;
+    if(!requireEditor())return;
     hiddenSubjects.delete(restore.dataset.restoreSubject);persist();renderAll();
   });
   $('#resource-rows').addEventListener('click',event=>{
     const pick=event.target.closest('[data-toggle-save]');
-    if(pick){const id=Number(pick.dataset.toggleSave);if(saved.has(id))saved.delete(id);else saved.add(id);persist();renderAll();renderSchedule();return}
+    if(pick){if(!requireEditor())return;const id=Number(pick.dataset.toggleSave);if(saved.has(id))saved.delete(id);else saved.add(id);persist();renderAll();renderSchedule();return}
     const complete=event.target.closest('[data-toggle-done]');
-    if(complete){const id=Number(complete.dataset.toggleDone);if(done.has(id))done.delete(id);else done.add(id);persist();renderAll()}
+    if(complete){if(!requireEditor())return;const id=Number(complete.dataset.toggleDone);if(done.has(id))done.delete(id);else done.add(id);persist();renderAll()}
   });
   $('#type-filters').addEventListener('click',event=>{
     const button=event.target.closest('[data-type]');
@@ -314,6 +437,7 @@ document.addEventListener('DOMContentLoaded',()=>{
   $('#clear-filters').addEventListener('click',()=>{$('#search').value='';$('#subject-filter').value='';$('#level-filter').value='';renderResources()});
   $('#cart-form').addEventListener('submit',event=>{
     event.preventDefault();
+    if(!requireEditor())return;
     const url=cartUrl($('#cart-url').value);
     const error=$('#cart-error');error.hidden=true;
     if(!url){error.textContent='Geçerli bir http veya https bağlantısı gir.';error.hidden=false;return}
@@ -328,12 +452,36 @@ document.addEventListener('DOMContentLoaded',()=>{
   });
   $('#cart-list').addEventListener('click',event=>{
     const button=event.target.closest('[data-remove-cart]');if(!button)return;
+    if(!requireEditor())return;
     const index=cart.findIndex(item=>item.id===button.dataset.removeCart);if(index<0)return;
     const removed=cart.splice(index,1)[0];
     if(!persistCart()){cart.splice(index,0,removed);const error=$('#cart-error');error.textContent='Ürün kaldırma işlemi kaydedilemedi.';error.hidden=false;return}
     renderCart();
   });
+  $('#cloud-account').addEventListener('click',()=>{pageBeforeLogin=location.hash||'#genel';location.hash='#giris'});
+  $('#login-form').addEventListener('submit',async event=>{
+    event.preventDefault();
+    const error=$('#login-error');error.hidden=true;
+    if(!cloudClient){
+      error.textContent='Bulut bağlantısı henüz yapılandırılmadı.';error.hidden=false;return;
+    }
+    const submit=event.currentTarget.querySelector('button[type="submit"]');submit.disabled=true;
+    const {error:signInError}=await cloudClient.auth.signInWithPassword({
+      email:$('#login-email').value.trim(),
+      password:$('#login-password').value
+    });
+    submit.disabled=false;
+    if(signInError){error.textContent='Giriş başarısız. E-posta veya şifreyi kontrol et.';error.hidden=false;return}
+    event.currentTarget.reset();
+    location.hash=pageBeforeLogin==='#giris'?'#genel':pageBeforeLogin;
+  });
+  $('#logout-button').addEventListener('click',async()=>{
+    if(cloudClient)await cloudClient.auth.signOut();
+    location.hash='#giris';
+  });
+  document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible')loadSharedState()});
   $('#theme-toggle').addEventListener('click',()=>{const current=document.documentElement.dataset.tema||(matchMedia('(prefers-color-scheme: dark)').matches?'koyu':'acik');const next=current==='koyu'?'acik':'koyu';document.documentElement.dataset.tema=next;try{localStorage.setItem('tyt_tema',next)}catch{}});
   window.addEventListener('hashchange',showPage);
   renderAll();renderCart();renderSchedule();showPage();
+  initCloud();
 });

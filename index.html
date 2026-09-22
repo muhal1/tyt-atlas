@@ -8,6 +8,8 @@
   <title>TYT Atlas | Kaynak Rehberi</title>
   <link rel="stylesheet" href="style.css">
   <script>try{const t=localStorage.getItem('tyt_tema');if(t==='acik'||t==='koyu')document.documentElement.dataset.tema=t}catch{}</script>
+  <script src="supabase-config.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.116.0/dist/umd/supabase.min.js" defer></script>
   <script src="app.js" defer></script>
 </head>
 <body>
@@ -19,6 +21,7 @@
         <a class="nav-item" data-page="program" href="#program"><span aria-hidden="true">◷</span> Çalışma Programı</a>
         <a class="nav-item" data-page="kaynaklar" href="#kaynaklar"><span aria-hidden="true">▤</span> Kaynaklar</a>
         <a class="nav-item" data-page="sepet" href="#sepet"><span aria-hidden="true">▣</span> Alışveriş Sepeti</a>
+        <a class="nav-item" data-page="giris" href="#giris"><span aria-hidden="true">◎</span> Aile Girişi</a>
       </nav>
       <div class="sidebar-foot">Temel → Orta seviye<br><span>20 Eylül 2026 araştırması</span></div>
     </aside>
@@ -26,13 +29,16 @@
     <div class="main-shell">
       <header class="topbar cam">
         <div><div class="eyebrow">TYT ATLAS <span class="top-separator">/</span> 2027 YKS</div><h1 id="page-title">Genel bakış</h1></div>
-        <button id="theme-toggle" class="icon-button" type="button" aria-label="Temayı değiştir" title="Temayı değiştir">◐</button>
+        <div class="topbar-actions">
+          <button id="cloud-account" class="cloud-account" type="button" aria-haspopup="dialog"><span id="cloud-dot" aria-hidden="true"></span><span id="cloud-label">Ortak pano</span></button>
+          <button id="theme-toggle" class="icon-button" type="button" aria-label="Temayı değiştir" title="Temayı değiştir">◐</button>
+        </div>
       </header>
 
       <main>
         <section id="overview-page" class="page" aria-labelledby="overview-heading">
           <div class="overview-intro">
-            <div><span class="pill highlight">KİŞİSEL KAYNAK PLANIN</span><h2 id="overview-heading">Seçtiğin kaynaklar,<br><em>ders ders önünde.</em></h2><p>Her ders için kullanacağın video, soru bankası ve föyü Kaynaklar sayfasından seç. Tercihlerin bu tarayıcıda saklanır.</p></div>
+            <div><span class="pill highlight">ORTAK KAYNAK PLANINIZ</span><h2 id="overview-heading">Seçtiğiniz kaynaklar,<br><em>her cihazda aynı.</em></h2><p>Bilgiler ortak panodan okunur. Düzenlemek için aile hesabınızla giriş yapın.</p></div>
             <a class="primary-link" href="#kaynaklar">Kaynakları incele <span aria-hidden="true">↗</span></a>
           </div>
 
@@ -48,8 +54,8 @@
           <section class="metrics" aria-label="Özet">
             <div class="metric"><span>GÖRÜNEN DERS</span><strong id="subject-count">—</strong><small>Çalışma panonda</small></div>
             <div class="metric"><span>TOPLAM KAYNAK</span><strong id="resource-count">—</strong><small>Video, kitap, VDK</small></div>
-            <div class="metric"><span>SEÇİLEN</span><strong id="saved-count">0</strong><small>Bu tarayıcıda</small></div>
-            <div class="metric"><span>TAMAMLANAN</span><strong id="done-count">0</strong><small>Bu tarayıcıda</small></div>
+            <div class="metric"><span>SEÇİLEN</span><strong id="saved-count">0</strong><small>Ortak panoda</small></div>
+            <div class="metric"><span>TAMAMLANAN</span><strong id="done-count">0</strong><small>Ortak panoda</small></div>
           </section>
 
           <section class="notes-grid" aria-label="Kullanım notları"><article class="note-card"><span class="note-icon">01</span><h3>Video + VDK</h3><p>Video ders kitabını izlediğin hocayla eşleştir. Kamp sırasında aynı sayfaları takip etmek konuyu pekiştirir.</p></article><article class="note-card"><span class="note-icon">02</span><h3>Tek soru bankasıyla başla</h3><p>Önce temel düzeyde bir kitap bitir. İkinci kaynağa ihtiyacı netlerin ve yanlışların belirlesin.</p></article><article class="note-card"><span class="note-icon">03</span><h3>Paragrafta düzenli pratik</h3><p>Uzun video kampı yerine günlük soru çözümü ve yanlış analiziyle ilerle.</p></article></section>
@@ -57,14 +63,14 @@
 
         <section id="schedule-page" class="page" aria-labelledby="schedule-heading" hidden>
           <div class="schedule-intro">
-            <div><span class="pill highlight">HAFTALIK ÇALIŞMA PLANI</span><h2 id="schedule-heading">Düzenli başla,<br><em>temeli sağlam kur.</em></h2><p>Her gün 10 paragrafla açılış; ardından Bıyıklı Matematik temel kampı. Fizik haftada üç gün, okul sonrası ise yalnızca hafif tekrar var.</p></div>
-            <div class="schedule-hours" aria-label="Günlük sabit saatler"><div><span>10:00</span><strong>Derse başla</strong></div><div><span>13:30</span><strong>Evden çık</strong></div><div><span>19:30</span><strong>Eve dön</strong></div><div><span>00:00</span><strong>Uyku</strong></div></div>
+            <div><span class="pill highlight">HAFTALIK ÇALIŞMA PLANI</span><h2 id="schedule-heading">Düzenli başla,<br><em>temeli sağlam kur.</em></h2><p>Güne 09:00'da başla; sabah 1 saat 45 dakikalık iki blok çalış. Akşam 20:00–22:00 arasında soru çözümü ve tekrar yap.</p></div>
+            <div class="schedule-hours" aria-label="Günlük sabit saatler"><div><span>09:00</span><strong>Derse başla</strong></div><div><span>13:30</span><strong>Evden çık</strong></div><div><span>19:30</span><strong>Eve dön</strong></div><div><span>00:00</span><strong>Uyku</strong></div></div>
           </div>
           <section class="plan-principles" aria-label="Programın temel kuralları">
             <article><span>HER GÜN</span><strong>10 paragraf sorusu</strong><small>İlk çalışma; süre tut, yanlışını işaretle.</small></article>
             <article><span>ÖNCELİK 01</span><strong>Bıyıklı Matematik · 10 Günde Temel</strong><small>Bir ders videosu + kısa not + temel soru.</small></article>
             <article><span>ÖNCELİK 02</span><strong id="physics-priority-name">Seçtiğin fizik kampı</strong><small>Salı, perşembe ve cumartesi; video + kısa not.</small></article>
-            <article class="light-rule"><span>AKŞAM KURALI</span><strong>Yalnızca 10 problem</strong><small>Yeni ve ağır konu yok; en geç 21:30'da bırak.</small></article>
+            <article class="light-rule"><span>AKŞAM KURALI</span><strong>2 saat soru + tekrar</strong><small>20:00'da başla, 22:00'da çalışmayı bitir.</small></article>
           </section>
           <div class="schedule-section-heading"><div><span class="eyebrow">PAZARTESİ → PAZAR</span><h3>Haftanın tamamı</h3></div><span class="count-badge">1. hafta · temel başlangıç</span></div>
           <div id="weekly-plan" class="weekly-plan-wrap" tabindex="0" aria-label="Haftalık çalışma programı; küçük ekranda yatay kaydırılabilir"></div>
@@ -91,10 +97,10 @@
             <button id="clear-filters" class="quiet-button" type="button">Temizle</button>
           </div>
           <div class="table-wrap"><table><thead><tr><th scope="col">DERS / ALAN</th><th scope="col">KAYNAK</th><th scope="col">TÜR</th><th scope="col">SEVİYE</th><th scope="col">NOT</th><th scope="col">BAĞLANTI</th><th scope="col" class="actions-head">TERCİH</th></tr></thead><tbody id="resource-rows"></tbody></table><div id="empty-state" class="empty" hidden>Bu filtrelerle eşleşen kaynak yok. Aramayı veya filtreleri değiştir.</div></div>
-          <p class="table-note">Seçilen kaynaklar Genel bakışta görünür. Gizlenen dersleri Genel bakışın altındaki “Gizlenen dersler” bölümünden geri getirebilirsin. Tercihler yalnızca bu tarayıcıda saklanır. Mağaza puanları Eylül 2026 tarihli kullanıcı değerlendirmeleridir; satın almadan önce baskıyı ve satıcıyı kontrol et.</p>
+          <p class="table-note">Seçilen kaynaklar Genel bakışta görünür. Gizlenen dersleri Genel bakışın altındaki “Gizlenen dersler” bölümünden geri getirebilirsin. Ortak pano tüm cihazlarda aynı bilgileri gösterir; değişiklik için giriş gerekir. Mağaza puanları Eylül 2026 tarihli kullanıcı değerlendirmeleridir; satın almadan önce baskıyı ve satıcıyı kontrol et.</p>
         </section>
         <section id="cart-page" class="page" aria-labelledby="cart-heading" hidden>
-          <div class="resources-intro"><span class="pill highlight">KİŞİSEL LİSTE</span><h2 id="cart-heading">Alışveriş Sepeti</h2><p>Almayı planladığın ürünlerin bağlantılarını burada biriktir. Liste bu tarayıcıda saklanır; diğer cihazlarla kendiliğinden eşitlenmez.</p></div>
+          <div class="resources-intro"><span class="pill highlight">ORTAK LİSTE</span><h2 id="cart-heading">Alışveriş Sepeti</h2><p>Almayı planladığınız ürünlerin bağlantılarını burada biriktirin. Liste tüm telefon ve bilgisayarlarda ortak görünür.</p></div>
           <div class="cart-layout">
             <form id="cart-form" class="cart-form" autocomplete="off">
               <h3>Yeni ürün ekle</h3>
@@ -112,6 +118,44 @@
               <p id="cart-empty" class="cart-empty">Henüz ürün eklenmedi. İlk bağlantıyı soldaki alana yapıştır.</p>
               <ul id="cart-list" class="cart-list"></ul>
             </section>
+          </div>
+        </section>
+        <section id="login-page" class="page login-page" aria-labelledby="login-heading" hidden>
+          <div class="login-shell">
+            <div class="login-visual">
+              <span class="pill highlight">ORTAK ÇALIŞMA ALANI</span>
+              <h2 id="login-heading">Aynı plan,<br><em>her cihazda.</em></h2>
+              <p>Sen ve kardeşin kendi hesabınızla giriş yapın; seçilen kaynaklar, tamamlananlar ve alışveriş sepeti telefonda ve bilgisayarda aynı kalsın.</p>
+              <div class="login-benefits" aria-label="Ortak pano özellikleri">
+                <div><span aria-hidden="true">↻</span><strong>Anında ortak kayıt</strong><small>Değişiklikler tek panoya yazılır.</small></div>
+                <div><span aria-hidden="true">⌁</span><strong>Her cihazdan erişim</strong><small>Telefon, tablet ve bilgisayarda aynı veri.</small></div>
+                <div><span aria-hidden="true">◇</span><strong>Güvenli düzenleme</strong><small>Ziyaretçiler görür, aile hesapları düzenler.</small></div>
+              </div>
+            </div>
+            <div class="account-card cam">
+              <div id="signed-out-panel">
+                <span class="eyebrow">AİLE HESABI</span>
+                <h2>Tekrar hoş geldin</h2>
+                <p>Ortak panoyu düzenlemek için hesabınla giriş yap.</p>
+                <form id="login-form" class="login-form">
+                  <label for="login-email">E-posta</label>
+                  <input id="login-email" name="email" type="email" autocomplete="username" placeholder="ornek@email.com" required>
+                  <label for="login-password">Şifre</label>
+                  <input id="login-password" name="password" type="password" autocomplete="current-password" placeholder="Şifren" required>
+                  <p id="login-error" class="form-error" role="alert" hidden></p>
+                  <button class="primary-link login-submit" type="submit">Giriş yap <span aria-hidden="true">→</span></button>
+                </form>
+                <p class="login-help">Hesabın yoksa pano yöneticisinden aile hesabı oluşturmasını iste.</p>
+              </div>
+              <div id="signed-in-panel" hidden>
+                <div class="signed-in-icon" aria-hidden="true">✓</div>
+                <span class="eyebrow">DÜZENLEME AÇIK</span>
+                <h2>Ortak panoya bağlısın</h2>
+                <p id="account-email"></p>
+                <a class="primary-link" href="#genel">Panoya dön <span aria-hidden="true">→</span></a>
+                <button id="logout-button" class="quiet-button logout-button" type="button">Çıkış yap</button>
+              </div>
+            </div>
           </div>
         </section>
         <footer>TYT Atlas · 20 Eylül 2026 kaynak araştırması · Satın almadan önce baskıyı ve güncelliği kontrol et.</footer>
