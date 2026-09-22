@@ -21,7 +21,7 @@
         <a class="nav-item" data-page="program" href="#program"><span aria-hidden="true">◷</span> Çalışma Programı</a>
         <a class="nav-item" data-page="kaynaklar" href="#kaynaklar"><span aria-hidden="true">▤</span> Kaynaklar</a>
         <a class="nav-item" data-page="sepet" href="#sepet"><span aria-hidden="true">▣</span> Alışveriş Sepeti</a>
-        <a class="nav-item" data-page="giris" href="#giris"><span aria-hidden="true">◎</span> Aile Girişi</a>
+        <a class="nav-item" data-page="giris" href="#giris"><span aria-hidden="true">◎</span> Profil</a>
       </nav>
       <div class="sidebar-foot">Temel → Orta seviye<br><span>20 Eylül 2026 araştırması</span></div>
     </aside>
@@ -38,7 +38,7 @@
       <main>
         <section id="overview-page" class="page" aria-labelledby="overview-heading">
           <div class="overview-intro">
-            <div><span class="pill highlight">ORTAK KAYNAK PLANINIZ</span><h2 id="overview-heading">Seçtiğiniz kaynaklar,<br><em>her cihazda aynı.</em></h2><p>Bilgiler ortak panodan okunur. Düzenlemek için aile hesabınızla giriş yapın.</p></div>
+            <div><span class="pill highlight">ORTAK KAYNAK PLANINIZ</span><h2 id="overview-heading">Seçtiğiniz kaynaklar,<br><em>her cihazda aynı.</em></h2><p>Her kullanıcı kendi profiliyle giriş yapar; çalışma panosu tüm hesaplarda ortaktır.</p></div>
             <a class="primary-link" href="#kaynaklar">Kaynakları incele <span aria-hidden="true">↗</span></a>
           </div>
 
@@ -125,18 +125,18 @@
             <div class="login-visual">
               <span class="pill highlight">ORTAK ÇALIŞMA ALANI</span>
               <h2 id="login-heading">Aynı plan,<br><em>her cihazda.</em></h2>
-              <p>Sen ve kardeşin kendi hesabınızla giriş yapın; seçilen kaynaklar, tamamlananlar ve alışveriş sepeti telefonda ve bilgisayarda aynı kalsın.</p>
+              <p>Kendi hesabınla giriş yap; seçilen kaynaklar, tamamlananlar ve alışveriş sepeti telefonda ve bilgisayarda aynı kalsın.</p>
               <div class="login-benefits" aria-label="Ortak pano özellikleri">
                 <div><span aria-hidden="true">↻</span><strong>Anında ortak kayıt</strong><small>Değişiklikler tek panoya yazılır.</small></div>
                 <div><span aria-hidden="true">⌁</span><strong>Her cihazdan erişim</strong><small>Telefon, tablet ve bilgisayarda aynı veri.</small></div>
-                <div><span aria-hidden="true">◇</span><strong>Güvenli düzenleme</strong><small>Ziyaretçiler görür, aile hesapları düzenler.</small></div>
+                <div><span aria-hidden="true">◇</span><strong>Kişisel profil</strong><small>Her kullanıcı kendi adı ve e-postasıyla giriş yapar.</small></div>
               </div>
             </div>
             <div class="account-card cam">
               <div id="signed-out-panel">
-                <span class="eyebrow">AİLE HESABI</span>
+                <span class="eyebrow">HESABINA GİRİŞ</span>
                 <h2>Tekrar hoş geldin</h2>
-                <p>Ortak panoyu düzenlemek için hesabınla giriş yap.</p>
+                <p>Profiline ve ortak çalışma panosuna ulaşmak için giriş yap.</p>
                 <form id="login-form" class="login-form">
                   <label for="login-email">E-posta</label>
                   <input id="login-email" name="email" type="email" autocomplete="username" placeholder="ornek@email.com" required>
@@ -145,13 +145,21 @@
                   <p id="login-error" class="form-error" role="alert" hidden></p>
                   <button class="primary-link login-submit" type="submit">Giriş yap <span aria-hidden="true">→</span></button>
                 </form>
-                <p class="login-help">Hesabın yoksa pano yöneticisinden aile hesabı oluşturmasını iste.</p>
+                <p class="login-help">Hesabın yoksa pano yöneticisinden senin için bir kullanıcı hesabı oluşturmasını iste.</p>
               </div>
               <div id="signed-in-panel" hidden>
                 <div class="signed-in-icon" aria-hidden="true">✓</div>
-                <span class="eyebrow">DÜZENLEME AÇIK</span>
-                <h2>Ortak panoya bağlısın</h2>
-                <p id="account-email"></p>
+                <span class="eyebrow">PROFİLİN</span>
+                <h2>Hesap bilgilerin</h2>
+                <form id="profile-form" class="login-form profile-form">
+                  <label for="profile-name">Görünen ad</label>
+                  <input id="profile-name" name="display_name" type="text" minlength="2" maxlength="60" autocomplete="name" required>
+                  <label for="profile-email">E-posta</label>
+                  <input id="profile-email" type="email" readonly>
+                  <p id="profile-error" class="form-error" role="alert" hidden></p>
+                  <p id="profile-status" class="profile-status" role="status" hidden></p>
+                  <button class="primary-link login-submit" type="submit">Profili kaydet <span aria-hidden="true">✓</span></button>
+                </form>
                 <a class="primary-link" href="#genel">Panoya dön <span aria-hidden="true">→</span></a>
                 <button id="logout-button" class="quiet-button logout-button" type="button">Çıkış yap</button>
               </div>

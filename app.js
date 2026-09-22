@@ -73,6 +73,8 @@ let resourceType='all';
 const cloudConfig=window.TYT_ATLAS_SUPABASE||{};
 let cloudClient=null;
 let cloudUser=null;
+let userProfile=null;
+let authReady=false;
 let cloudLoading=false;
 let cloudSaveTimer=null;
 let pageBeforeLogin='#genel';
@@ -98,10 +100,31 @@ function updateAccountUI(){
   const signedIn=Boolean(cloudUser);
   $('#signed-out-panel').hidden=signedIn;
   $('#signed-in-panel').hidden=!signedIn;
-  $('#account-email').textContent=signedIn?cloudUser.email:'';
+  document.querySelectorAll('[data-page]:not([data-page="giris"])').forEach(link=>{link.hidden=!signedIn});
+  if(signedIn){
+    $('#profile-name').value=userProfile?.display_name||defaultDisplayName(cloudUser);
+    $('#profile-email').value=cloudUser.email||'';
+  }
   if(!cloudClient)setCloudStatus('Kurulum bekliyor','warning');
   else if(signedIn)setCloudStatus('Düzenleme açık','online');
-  else setCloudStatus('Ortak pano','online');
+  else setCloudStatus('Giriş yap','');
+}
+
+function defaultDisplayName(user){
+  const raw=(user?.email||'').split('@')[0].replace(/[._-]+/g,' ').trim();
+  return (raw.length>=2?raw:'Kullanıcı').slice(0,60);
+}
+
+async function loadUserProfile(){
+  userProfile=null;
+  if(!cloudClient||!cloudUser)return;
+  const {data,error}=await cloudClient.from('profiles').select('display_name').eq('id',cloudUser.id).maybeSingle();
+  if(error){console.error('Profil yüklenemedi:',error);return}
+  if(data){userProfile=data;return}
+  const profile={id:cloudUser.id,display_name:defaultDisplayName(cloudUser),updated_at:new Date().toISOString()};
+  const {error:insertError}=await cloudClient.from('profiles').insert(profile);
+  if(insertError){console.error('Profil oluşturulamadı:',insertError);return}
+  userProfile={display_name:profile.display_name};
 }
 
 function requireEditor(){
@@ -168,7 +191,7 @@ function persist(){
 }
 
 async function loadSharedState(seedWhenMissing=false){
-  if(!cloudClient)return;
+  if(!cloudClient||!cloudUser)return;
   setCloudStatus('Yükleniyor…','syncing');
   const {data,error}=await cloudClient.from('panel_state').select('saved,done,hidden_subjects,cart,updated_at').eq('id','main').maybeSingle();
   if(error){
@@ -185,18 +208,27 @@ async function initCloud(){
   const configured=typeof cloudConfig.url==='string'&&cloudConfig.url.startsWith('https://')
     &&typeof cloudConfig.publishableKey==='string'&&cloudConfig.publishableKey.length>20;
   if(!configured||!window.supabase){
+    authReady=true;
     updateAccountUI();
+    showPage();
     return;
   }
   cloudClient=window.supabase.createClient(cloudConfig.url,cloudConfig.publishableKey);
   const {data:{session}}=await cloudClient.auth.getSession();
   cloudUser=session?.user||null;
+  if(cloudUser)await loadUserProfile();
+  authReady=true;
   updateAccountUI();
-  await loadSharedState(Boolean(cloudUser));
+  showPage();
+  if(cloudUser)await loadSharedState(true);
   cloudClient.auth.onAuthStateChange((_event,nextSession)=>{
     cloudUser=nextSession?.user||null;
-    updateAccountUI();
-    if(cloudUser)setTimeout(()=>loadSharedState(true),0);
+    userProfile=null;
+    setTimeout(async()=>{
+      if(cloudUser){await loadUserProfile();await loadSharedState(true)}
+      updateAccountUI();
+      showPage();
+    },0);
   });
 }
 
@@ -384,13 +416,17 @@ function renderSchedule(){
 }
 
 function showPage(){
-  const page=location.hash==='#program'?'program':location.hash==='#kaynaklar'?'kaynaklar':location.hash==='#sepet'?'sepet':location.hash==='#giris'?'giris':'genel';
+  let page=location.hash==='#program'?'program':location.hash==='#kaynaklar'?'kaynaklar':location.hash==='#sepet'?'sepet':location.hash==='#giris'?'giris':'genel';
+  if(!authReady||!cloudUser){
+    page='giris';
+    if(authReady&&location.hash!=='#giris')history.replaceState(null,'','#giris');
+  }
   $('#overview-page').hidden=page!=='genel';
   $('#schedule-page').hidden=page!=='program';
   $('#resources-page').hidden=page!=='kaynaklar';
   $('#cart-page').hidden=page!=='sepet';
   $('#login-page').hidden=page!=='giris';
-  $('#page-title').textContent={genel:'Genel bakış',program:'Çalışma Programı',kaynaklar:'Kaynaklar',sepet:'Alışveriş Sepeti',giris:'Aile Girişi'}[page];
+  $('#page-title').textContent={genel:'Genel bakış',program:'Çalışma Programı',kaynaklar:'Kaynaklar',sepet:'Alışveriş Sepeti',giris:cloudUser?'Profil':'Giriş yap'}[page];
   document.querySelectorAll('[data-page]').forEach(link=>{
     const current=link.dataset.page===page;
     link.classList.toggle('active',current);
@@ -466,14 +502,33 @@ document.addEventListener('DOMContentLoaded',()=>{
       error.textContent='Bulut bağlantısı henüz yapılandırılmadı.';error.hidden=false;return;
     }
     const submit=event.currentTarget.querySelector('button[type="submit"]');submit.disabled=true;
-    const {error:signInError}=await cloudClient.auth.signInWithPassword({
+    const {data:signInData,error:signInError}=await cloudClient.auth.signInWithPassword({
       email:$('#login-email').value.trim(),
       password:$('#login-password').value
     });
     submit.disabled=false;
     if(signInError){error.textContent='Giriş başarısız. E-posta veya şifreyi kontrol et.';error.hidden=false;return}
+    cloudUser=signInData.user;
+    await loadUserProfile();
+    await loadSharedState(true);
+    updateAccountUI();
     event.currentTarget.reset();
     location.hash=pageBeforeLogin==='#giris'?'#genel':pageBeforeLogin;
+  });
+  $('#profile-form').addEventListener('submit',async event=>{
+    event.preventDefault();
+    const error=$('#profile-error');
+    const status=$('#profile-status');
+    error.hidden=true;status.hidden=true;
+    const displayName=$('#profile-name').value.trim();
+    if(displayName.length<2||displayName.length>60){error.textContent='Görünen ad 2–60 karakter olmalı.';error.hidden=false;return}
+    const submit=event.currentTarget.querySelector('button[type="submit"]');submit.disabled=true;
+    const {error:profileError}=await cloudClient.from('profiles').upsert({id:cloudUser.id,display_name:displayName,updated_at:new Date().toISOString()},{onConflict:'id'});
+    submit.disabled=false;
+    if(profileError){error.textContent='Profil kaydedilemedi. Lütfen tekrar dene.';error.hidden=false;return}
+    userProfile={display_name:displayName};
+    updateAccountUI();
+    status.textContent='Profil kaydedildi.';status.hidden=false;
   });
   $('#logout-button').addEventListener('click',async()=>{
     if(cloudClient)await cloudClient.auth.signOut();

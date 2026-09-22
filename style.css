@@ -166,6 +166,9 @@
 .login-submit:disabled{opacity:.55;cursor:wait}
 .login-help{border-top:1px solid var(--cizgi);padding-top:15px;margin:20px 0 0!important;font-size:11px!important}
 .signed-in-icon{display:grid;place-items:center;width:52px;height:52px;border-radius:50%;margin-bottom:22px;background:color-mix(in srgb,var(--yesil) 14%,transparent);color:var(--yesil);font-size:24px;font-weight:800}
+.profile-form{margin-bottom:20px;padding-bottom:20px;border-bottom:1px solid var(--cizgi)}
+.profile-form input[readonly]{color:var(--soluk);cursor:not-allowed}
+.profile-status{margin:2px 0 0!important;color:var(--yesil)!important;font-size:11px!important}
 .logout-button{display:block;margin-top:14px;width:100%}
 @media(max-width:900px){.login-shell{grid-template-columns:1fr;max-width:650px;margin:auto}.login-visual h2{font-size:48px}.login-benefits{margin-top:25px}}
 @media(max-width:520px){.cloud-account{width:36px;padding:0;justify-content:center}.cloud-account #cloud-label{display:none}.login-page{min-height:auto}.login-shell{padding:10px 0 30px;gap:26px}.login-visual h2{font-size:38px}.login-benefits{grid-template-columns:1fr;gap:14px}.login-benefits div{display:grid;grid-template-columns:34px 1fr;column-gap:6px}.login-benefits span{grid-row:1/3;margin:0}.account-card{padding:22px}}
