@@ -55,7 +55,8 @@ const kaynaklar = [
   ['Matematik','Bıyıklı Matematik','GPT TYT Matematik Soru Bankası','kitap','temel','Kolaydan zora video çözümlü sorular; baskı yılını kontrol et','https://biyiklimatematik.com/urun/GPT-TYT-Matematik-Soru-Bankasi-Biyikli-Matematik-Matronik-124','Yayıncı sayfası'],
   ['Problemler','Acil Yayınları','TYT Problemlerin İlacı 2027','kitap','temel','Temeli zayıf olanlara · Trendyol 4,7/5 (Eyl 2026)','https://www.trendyol.com/acil-yayinlari/acil-tyt-problemlerin-ilaci-2027-p-759815524','Ürün sayfası'],
   ['Problemler','Mikro Orijinal','TYT Problemler Fasikülü Soru Bankası','kitap','temel','Kolay → orta alternatif · Trendyol 4,6/5 (Eyl 2026)','https://www.trendyol.com/orijinal-yayinlari/orijinal-mikro-tyt-problemler-fasikulu-soru-bankasi-p-854656337','Ürün sayfası'],
-  ['Paragraf','345 Yayınları','Sıfır Risk Paragraf Soru Bankası','kitap','temel','Kolaydan zora alternatif · Trendyol 4,7/5 (Eyl 2026)','https://www.trendyol.com/uc-dort-bes-yayincilik/345-paragraf-sifir-risk-guncel-baski-p-750677344','Ürün sayfası']
+  ['Paragraf','345 Yayınları','Sıfır Risk Paragraf Soru Bankası','kitap','temel','Kolaydan zora alternatif · Trendyol 4,7/5 (Eyl 2026)','https://www.trendyol.com/uc-dort-bes-yayincilik/345-paragraf-sifir-risk-guncel-baski-p-750677344','Ürün sayfası'],
+  ['Problemler','Bıyıklı Matematik','10 Günde PROBLEM Temeli Atma Garanti Kampı','video','temel','Problem temeli için 10 günlük başlangıç kampı','https://www.youtube.com/watch?v=WPRdk9Oj7C4','Ders videosu']
 // Kimlik 2 kaldırılan eski oynatma listesine aitti; diğer kayıtların kimlikleri sabit kalır.
 ].map(([ders,yayinci,ad,tur,seviye,not,url,baglanti],index)=>({id:index===0?1:index+2,ders,yayinci,ad,tur,seviye,not,url,baglanti}));
 
@@ -66,6 +67,10 @@ const readSet=(key,convert=value=>value)=>{try{const value=JSON.parse(localStora
 const saved=new Set([...readSet('tyt_kaydedilen',Number)].filter(id=>id!==2));
 const done=new Set([...readSet('tyt_tamamlanan',Number)].filter(id=>id!==2));
 const hiddenSubjects=readSet('tyt_gizlenen_dersler',String);
+const requestedSelectionMigrationKey='tyt_secili_migration_biyikli_problem_temeli_2026_09_23';
+const requestedSelectionIds=kaynaklar
+  .filter(item=>item.url==='https://www.youtube.com/watch?v=WPRdk9Oj7C4')
+  .map(item=>item.id);
 const subjects=[...new Set(kaynaklar.map(item=>item.ders))];
 let resourceType='all';
 const cloudConfig=window.TYT_ATLAS_SUPABASE||{};
@@ -84,6 +89,18 @@ function persistLocal(){
     localStorage.setItem('tyt_gizlenen_dersler',JSON.stringify([...hiddenSubjects]));
     return true;
   }catch{return false}
+}
+
+function migrateRequestedSelections(){
+  try{
+    if(localStorage.getItem(requestedSelectionMigrationKey)==='1')return false;
+  }catch{}
+  let changed=false;
+  for(const id of requestedSelectionIds){
+    if(!saved.has(id)){saved.add(id);changed=true}
+  }
+  try{localStorage.setItem(requestedSelectionMigrationKey,'1')}catch{}
+  return changed;
 }
 
 function setCloudStatus(label,state=''){
@@ -145,9 +162,11 @@ function applySharedState(row){
   replaceSet(saved,(row.saved||[]).filter(id=>Number(id)!==2),Number);
   replaceSet(done,(row.done||[]).filter(id=>Number(id)!==2),Number);
   replaceSet(hiddenSubjects,row.hidden_subjects,String);
+  const migrated=migrateRequestedSelections();
   persistLocal();
   renderAll();renderSchedule();
   cloudLoading=false;
+  if(migrated)queueCloudSave();
 }
 
 function sharedPayload(){
@@ -203,6 +222,7 @@ async function initCloud(){
     &&typeof cloudConfig.publishableKey==='string'&&cloudConfig.publishableKey.length>20;
   if(!configured||!window.supabase){
     authReady=true;
+    if(migrateRequestedSelections()){persistLocal();renderAll();renderSchedule()}
     updateAccountUI();
     showPage();
     return;
