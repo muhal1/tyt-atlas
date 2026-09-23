@@ -357,24 +357,30 @@ function renderSchedule(){
   const morning=cell('math','10 paragraf + temel kamp','Süre tut, ardından 1 ders');
   const evening=cell('problem','Problem + tekrar','2 saatlik akşam çalışması');
   const school=cell('school','13:30 evden çıkış','19:30 eve dönüş');
-  const rest=cell('rest','Dinlenme / sosyal zaman','Ek ders zorunlu değil','weekend');
   $('#weekly-plan').innerHTML=`
-    <table class="weekly-plan">
-      <thead><tr><th scope="col">Saat</th><th scope="col">Pazartesi</th><th scope="col">Salı</th><th scope="col">Çarşamba</th><th scope="col">Perşembe</th><th scope="col">Cuma</th><th scope="col" class="weekend">Cumartesi</th><th scope="col" class="weekend">Pazar</th></tr></thead>
+    <table class="weekly-plan weekday-plan">
+      <thead><tr><th scope="col">Saat</th><th scope="col">Pazartesi</th><th scope="col">Salı</th><th scope="col">Çarşamba</th><th scope="col">Perşembe</th><th scope="col">Cuma</th></tr></thead>
       <tbody>
-        <tr><th scope="row"><strong>09:00–10:45</strong><small>Sabah · 1. blok</small></th>${morning.repeat(5)}${cell('math','10 paragraf + temel kamp','Eksik dersi de tamamla','weekend')}${cell('math','10 paragraf + temel kamp','Haftanın son dersi','weekend')}</tr>
-        <tr><th scope="row"><strong>11:00–12:45</strong><small>Sabah · 2. blok</small></th>
+        <tr><th scope="row"><strong>09:00–10:45</strong><small>Sabah · 1. blok</small></th>${morning.repeat(5)}</tr>
+        <tr><th scope="row"><strong>11:15–13:00</strong><small>Sabah · 2. blok</small></th>
           ${cell('practice','15 temel matematik','Sabahki konudan')}
           ${cell('physics','1 ders videosu',physicsName)}
           ${cell('practice','15 temel matematik','Yanlışları düzelt')}
           ${cell('physics','1 ders videosu',physicsName)}
           ${cell('practice','15 temel matematik','Haftalık eksikleri gör')}
-          ${cell('physics','1 ders + 10 soru',physicsName,'weekend')}
-          ${cell('review','45 dk haftalık tekrar','Matematik + fizik yanlışları','weekend')}
         </tr>
-        <tr class="school-row"><th scope="row"><strong>13:30–19:30</strong><small>Gün ortası</small></th>${school.repeat(5)}${rest}${cell('rest','Dinlenme / sosyal zaman','Yeni haftaya enerji bırak','weekend')}</tr>
-        <tr><th scope="row"><strong>20:00–22:00</strong><small>Akşam çalışması</small></th>${evening.repeat(5)}${cell('problem','Problem + tekrar','2 saatlik akşam çalışması','weekend').repeat(2)}</tr>
-        <tr class="wind-down-row"><th scope="row"><strong>22:00–00:00</strong><small>Kapanış</small></th><td colspan="7"><strong>Ders bitti.</strong> Kalan zaman dinlenme ve uykuya hazırlık. <b>00:00'da uyku.</b></td></tr>
+        <tr class="school-row"><th scope="row"><strong>13:30–19:30</strong><small>Gün ortası</small></th>${school.repeat(5)}</tr>
+        <tr><th scope="row"><strong>20:00–22:00</strong><small>Akşam çalışması</small></th>${evening.repeat(5)}</tr>
+        <tr class="wind-down-row"><th scope="row"><strong>22:00–00:00</strong><small>Kapanış</small></th><td colspan="5"><strong>Ders bitti.</strong> Kalan zaman dinlenme ve uykuya hazırlık. <b>00:00'da uyku.</b></td></tr>
+      </tbody>
+    </table>
+    <div class="weekend-plan-heading"><strong>Hafta sonu programı</strong><small>Cumartesi ve pazar · 3 × 2 saat</small></div>
+    <table class="weekly-plan weekend-plan">
+      <thead><tr><th scope="col">Saat</th><th scope="col" class="weekend">Cumartesi</th><th scope="col" class="weekend">Pazar</th></tr></thead>
+      <tbody>
+        <tr><th scope="row"><strong>09:00–11:00</strong><small>1. blok</small></th>${cell('math','10 paragraf + temel kamp','Video, kısa not ve temel soru','weekend')}${cell('review','10 paragraf + haftalık tekrar','Yanlışları gözden geçir','weekend')}</tr>
+        <tr><th scope="row"><strong>12:00–14:00</strong><small>2. blok</small></th>${cell('physics','Fizik + soru çözümü',physicsName,'weekend')}${cell('math','Eksik ders + temel soru','Haftanın açığını kapat','weekend')}</tr>
+        <tr><th scope="row"><strong>16:00–18:00</strong><small>3. blok</small></th>${cell('problem','Problem + yanlış analizi','Süre tut, yanlışları ayır','weekend')}${cell('review','Genel tekrar + planlama','Yeni haftayı hazırla','weekend')}</tr>
       </tbody>
     </table>`;
   $('#physics-priority-name').textContent=physicsName;

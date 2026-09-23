@@ -85,6 +85,11 @@
 .schedule-section-heading h3,.plan-sources h3{margin:2px 0 0;font-size:21px;letter-spacing:-.025em}
 .weekly-plan-wrap{overflow-x:auto;border:1px solid var(--cizgi);border-radius:var(--r);background:var(--kart)}
 .weekly-plan{min-width:1180px;table-layout:fixed}
+.weekly-plan.weekday-plan{min-width:900px}
+.weekly-plan.weekend-plan{min-width:620px}
+.weekend-plan-heading{display:flex;justify-content:space-between;align-items:center;gap:16px;min-width:620px;padding:13px 14px;border-top:1px solid var(--cizgi);border-bottom:1px solid var(--cizgi);background:color-mix(in srgb,var(--vurgu) 6%,var(--kart-2))}
+.weekend-plan-heading strong{font-size:12px}
+.weekend-plan-heading small{color:var(--soluk);font-size:10px;font-weight:700}
 .weekly-plan th,.weekly-plan td{border-right:1px solid var(--cizgi)}
 .weekly-plan th:last-child,.weekly-plan td:last-child{border-right:0}
 .weekly-plan thead th{padding:13px 10px;text-align:center;background:var(--kart-2)}
