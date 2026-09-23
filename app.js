@@ -403,7 +403,6 @@ function renderSchedule(){
         <tr><th scope="row"><strong>16:00–18:00</strong><small>3. blok</small></th>${cell('problem','Problem + yanlış analizi','Süre tut, yanlışları ayır','weekend')}${cell('review','Genel tekrar + planlama','Yeni haftayı hazırla','weekend')}</tr>
       </tbody>
     </table>`;
-  $('#physics-priority-name').textContent=physicsName;
   const link=$('#physics-plan-source');
   link.querySelector('strong').textContent=physicsName;
   if(source&&source.url){link.href=source.url;link.removeAttribute('aria-disabled')}

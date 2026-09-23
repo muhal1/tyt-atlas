@@ -34,12 +34,7 @@
       </header>
 
       <main>
-        <section id="overview-page" class="page" aria-labelledby="overview-heading">
-          <div class="overview-intro">
-            <div><span class="pill highlight">ORTAK KAYNAK PLANINIZ</span><h2 id="overview-heading">Seçtiğiniz kaynaklar,<br><em>her cihazda aynı.</em></h2><p>Her kullanıcı kendi profiliyle giriş yapar; çalışma panosu tüm hesaplarda ortaktır.</p></div>
-            <a class="primary-link" href="#kaynaklar">Kaynakları incele <span aria-hidden="true">↗</span></a>
-          </div>
-
+        <section id="overview-page" class="page" aria-labelledby="selected-heading">
           <section class="selection-section" aria-labelledby="selected-heading">
             <div class="section-heading"><div><span class="eyebrow">ÇALIŞMA PANON</span><h2 id="selected-heading">Derslerim</h2><p class="section-subtitle">Seçtiklerin ilgili dersin içinde görünür. Kullanmadığın dersleri gizleyebilirsin.</p></div><span id="visible-subject-count" class="count-badge"></span></div>
             <div id="subject-cards" class="subject-grid"></div>
@@ -59,18 +54,8 @@
           <section class="notes-grid" aria-label="Kullanım notları"><article class="note-card"><span class="note-icon">01</span><h3>Video + VDK</h3><p>Video ders kitabını izlediğin hocayla eşleştir. Kamp sırasında aynı sayfaları takip etmek konuyu pekiştirir.</p></article><article class="note-card"><span class="note-icon">02</span><h3>Tek soru bankasıyla başla</h3><p>Önce temel düzeyde bir kitap bitir. İkinci kaynağa ihtiyacı netlerin ve yanlışların belirlesin.</p></article><article class="note-card"><span class="note-icon">03</span><h3>Paragrafta düzenli pratik</h3><p>Uzun video kampı yerine günlük soru çözümü ve yanlış analiziyle ilerle.</p></article></section>
         </section>
 
-        <section id="schedule-page" class="page" aria-labelledby="schedule-heading" hidden>
-          <div class="schedule-intro">
-            <div><span class="pill highlight">HAFTALIK ÇALIŞMA PLANI</span><h2 id="schedule-heading">Düzenli başla,<br><em>temeli sağlam kur.</em></h2><p>Hafta içi güne 09:00'da başla; sabah 1 saat 45 dakikalık iki blok, akşam 2 saat çalış. Cumartesi ve pazar ise üç ayrı 2 saatlik blok uygula.</p></div>
-            <div class="schedule-hours" aria-label="Günlük sabit saatler"><div><span>09:00</span><strong>Derse başla</strong></div><div><span>13:30</span><strong>Evden çık</strong></div><div><span>19:30</span><strong>Eve dön</strong></div><div><span>00:00</span><strong>Uyku</strong></div></div>
-          </div>
-          <section class="plan-principles" aria-label="Programın temel kuralları">
-            <article><span>HER GÜN</span><strong>10 paragraf sorusu</strong><small>İlk çalışma; süre tut, yanlışını işaretle.</small></article>
-            <article><span>ÖNCELİK 01</span><strong>Bıyıklı Matematik · 10 Günde Temel</strong><small>Bir ders videosu + kısa not + temel soru.</small></article>
-            <article><span>ÖNCELİK 02</span><strong id="physics-priority-name">Seçtiğin fizik kampı</strong><small>Salı, perşembe ve cumartesi; video + kısa not.</small></article>
-            <article class="light-rule"><span>HAFTA SONU</span><strong>3 × 2 saatlik blok</strong><small>09:00, 12:00 ve 16:00'da çalışmaya başla.</small></article>
-          </section>
-          <div class="schedule-section-heading"><div><span class="eyebrow">PAZARTESİ → PAZAR</span><h3>Haftanın tamamı</h3></div><span class="count-badge">1. hafta · temel başlangıç</span></div>
+        <section id="schedule-page" class="page" aria-labelledby="weekly-plan-heading" hidden>
+          <div class="schedule-section-heading"><div><span class="eyebrow">PAZARTESİ → PAZAR</span><h3 id="weekly-plan-heading">Haftanın tamamı</h3></div><span class="count-badge">1. hafta · temel başlangıç</span></div>
           <div id="weekly-plan" class="weekly-plan-wrap" tabindex="0" aria-label="Haftalık çalışma programı; küçük ekranda yatay kaydırılabilir"></div>
           <div class="plan-sources">
             <div><span class="eyebrow">BU HAFTA KULLANILACAKLAR</span><h3>Başlangıç kaynakları</h3></div>

@@ -9,10 +9,7 @@
 /* Genel bakış ve birleşik Kaynaklar sayfası */
 .page[hidden],[hidden]{display:none!important}
 .nav-item{text-decoration:none}
-.overview-intro{display:flex;justify-content:space-between;align-items:end;gap:28px;padding:12px 0 28px;border-bottom:1px solid var(--cizgi)}
-.overview-intro h2{font-size:clamp(31px,3.8vw,49px);line-height:1.1;letter-spacing:-.05em;margin:16px 0 13px}
-.overview-intro h2 em{color:var(--vurgu);font-style:normal}
-.overview-intro p,.resources-intro p{max-width:620px;margin:0;color:var(--soluk);font-size:14px}
+.resources-intro p{max-width:620px;margin:0;color:var(--soluk);font-size:14px}
 .primary-link{display:inline-flex;align-items:center;gap:14px;flex:none;padding:11px 15px;border-radius:var(--r);background:var(--vurgu);color:var(--vurgu-yazi);font-weight:700;text-decoration:none}
 .primary-link:hover{background:var(--vurgu-hover)}
 .selection-section{margin:27px 0 0}
@@ -60,27 +57,13 @@
 .select-source{border:1px solid var(--vurgu);border-radius:4px;color:var(--vurgu);background:transparent;padding:5px 8px;font-size:11px;font-weight:750;min-width:53px}
 .select-source:hover{background:color-mix(in srgb,var(--vurgu) 10%,transparent)}
 .select-source.selected{background:var(--vurgu);color:var(--vurgu-yazi)}
-@media(max-width:700px){.overview-intro{display:block}.overview-intro h2{font-size:34px}.overview-intro .primary-link{margin-top:18px}.subject-grid{grid-template-columns:1fr}.subject-card{min-height:155px}.resources-intro h2{font-size:31px}.type-filter{padding:8px 10px}.hidden-subjects summary{padding:12px}}
+@media(max-width:700px){.subject-grid{grid-template-columns:1fr}.subject-card{min-height:155px}.resources-intro h2{font-size:31px}.type-filter{padding:8px 10px}.hidden-subjects summary{padding:12px}}
 @media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}.hidden-subjects summary:before{transition:none}}
 
 .form-error{color:#b42318;font-size:12px;margin:2px 0}
 
 /* Haftalık çalışma programı */
-.schedule-intro{display:grid;grid-template-columns:minmax(0,1fr) minmax(420px,.8fr);gap:34px;align-items:end;padding:12px 0 26px;border-bottom:1px solid var(--cizgi)}
-.schedule-intro h2{font-size:clamp(31px,3.8vw,49px);line-height:1.1;letter-spacing:-.05em;margin:16px 0 13px}
-.schedule-intro h2 em{color:var(--vurgu);font-style:normal}
-.schedule-intro p{max-width:660px;margin:0;color:var(--soluk)}
-.schedule-hours{display:grid;grid-template-columns:repeat(4,1fr);border:1px solid var(--cizgi);border-radius:var(--r);background:var(--kart);overflow:hidden}
-.schedule-hours div{display:grid;gap:2px;padding:14px 12px;border-left:1px solid var(--cizgi)}
-.schedule-hours div:first-child{border-left:0}
-.schedule-hours span{font-size:17px;font-weight:760;letter-spacing:-.03em;color:var(--vurgu)}
-.schedule-hours strong{font-size:10px;color:var(--soluk);font-weight:650}
-.plan-principles{display:grid;grid-template-columns:repeat(4,1fr);gap:11px;margin:22px 0 32px}
-.plan-principles article{display:grid;align-content:start;gap:5px;min-height:126px;padding:17px;border:1px solid var(--cizgi);border-top:3px solid var(--vurgu);border-radius:var(--r);background:var(--kart)}
-.plan-principles article>span,.plan-sources a>span{color:var(--vurgu);font-size:9px;font-weight:800;letter-spacing:.13em}
-.plan-principles strong{font-size:14px;line-height:1.35}
-.plan-principles small{color:var(--soluk);font-size:11px;line-height:1.45}
-.plan-principles .light-rule{border-top-color:var(--yesil)}
+.plan-sources a>span{color:var(--vurgu);font-size:9px;font-weight:800;letter-spacing:.13em}
 .schedule-section-heading{display:flex;justify-content:space-between;align-items:end;gap:16px;margin-bottom:12px}
 .schedule-section-heading h3,.plan-sources h3{margin:2px 0 0;font-size:21px;letter-spacing:-.025em}
 .weekly-plan-wrap{overflow-x:auto;border:1px solid var(--cizgi);border-radius:var(--r);background:var(--kart)}
@@ -118,8 +101,8 @@
 .plan-sources>a strong{font-size:12px;line-height:1.4}
 .plan-sources>a small{color:var(--vurgu);font-size:10px;font-weight:700}
 .plan-sources>a[aria-disabled=true]{pointer-events:none}
-@media(max-width:1100px){.schedule-intro{grid-template-columns:1fr}.plan-principles{grid-template-columns:repeat(2,1fr)}.plan-sources{grid-template-columns:1fr 1fr}.plan-sources>div{grid-column:1/-1}}
-@media(max-width:700px){.schedule-intro h2{font-size:34px}.schedule-hours{grid-template-columns:repeat(2,1fr)}.schedule-hours div:nth-child(3){border-left:0;border-top:1px solid var(--cizgi)}.schedule-hours div:nth-child(4){border-top:1px solid var(--cizgi)}.plan-principles{grid-template-columns:1fr}.plan-principles article{min-height:0}.schedule-section-heading{align-items:start;flex-direction:column}.plan-sources{grid-template-columns:1fr}.plan-sources>div{grid-column:auto}.weekly-plan-wrap{margin-right:-20px;border-radius:var(--r) 0 0 var(--r)}}
+@media(max-width:1100px){.plan-sources{grid-template-columns:1fr 1fr}.plan-sources>div{grid-column:1/-1}}
+@media(max-width:700px){.schedule-section-heading{align-items:start;flex-direction:column}.plan-sources{grid-template-columns:1fr}.plan-sources>div{grid-column:auto}.weekly-plan-wrap{margin-right:-20px;border-radius:var(--r) 0 0 var(--r)}}
 .topbar-actions{display:flex;align-items:center;gap:8px}
 .cloud-account{height:36px;display:flex;align-items:center;gap:8px;border:0;border-radius:6px;background:var(--dugme-yuzey);color:var(--yazi);padding:0 11px;font-size:12px;font-weight:650}
 .cloud-account:hover{background:var(--dugme-yuzey-2)}
